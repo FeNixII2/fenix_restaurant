@@ -1,0 +1,6 @@
+RewriteEngine On
+
+# ส่งทุก request ที่ไม่ใช่ไฟล์หรือโฟลเดอร์จริง ไปที่ index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [QSA,L]

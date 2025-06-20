@@ -23,6 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 echo json_encode(['status' => 'error', 'message' => 'Category name is required']);
             }
+            $db = null;
             break;
         case 'editCategory':
             $categoryId = $_POST['id'] ?? '';
@@ -39,6 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 echo json_encode(['status' => 'error', 'message' => 'Category ID and name are required']);
             }
+            $db = null;
             break;
         case 'deleteCategory':
             $categoryId = $_POST['id'] ?? '';
@@ -53,6 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 echo json_encode(['status' => 'error', 'message' => 'Category ID is required']);
             }
+            $db = null;
             break;
 
         case 'getCategory':
@@ -60,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute();
             $category = $stmt->fetchAll(PDO::FETCH_ASSOC);
             echo json_encode(['status' => 'success', 'data' => $category]);
-
+            $db = null;
             break;
 
         case 'getAllMenu':
@@ -68,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute();
             $menu = $stmt->fetchAll(PDO::FETCH_ASSOC);
             echo json_encode(['status' => 'success', 'data' => $menu]);
-
+            $db = null;
             break;
 
         case 'addMenu':
@@ -123,6 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 echo json_encode(['status' => 'error', 'message' => 'เพิ่มเมนูไม่สำเร็จ']);
                 exit;
             }
+            $db = null;
             break;
 
         case 'editMenu':
@@ -195,6 +199,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 echo json_encode(['status' => 'error', 'message' => 'Failed to edit menu']);
             }
+            $db = null;
             break;
 
         case 'deleteMenu':
@@ -210,6 +215,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 echo json_encode(['status' => 'error', 'message' => 'Menu ID is required']);
             }
+            $db = null;
             break;
 
         case 'updateStock':
@@ -225,6 +231,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             echo json_encode(['status' => 'success', 'message' => 'แก้ไขสต๊อกสำเร็จ']);
+            $db = null;
             break;
 
         default:

@@ -7,6 +7,35 @@
     </div>
 </div>
 
+<div class="row">
+   
+
+    <div class="col-sm-12 col-md-4 col-lg-3 mb-4">
+        <div class="p-3 shadow rounded-4">
+            <div class="card-body d-flex flex-column justify-content-between h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold text-primary mb-0 fs-3 text-danger">โต๊ะ 1</h5>
+                    <span class="badge bg-success">ว่าง</span>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <label class="form-check-label me-2 fs-5" for="status1">เปิดใช้งาน</label>
+                    <div class="form-check form-switch fs-4">
+                        <input class="form-check-input" type="checkbox" role="switch" id="status1" name="status" checked>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <button class="btn btn-warning text-white btn-sm w-50 me-1">แก้ไข</button>
+                    <button class="btn btn-danger btn-sm w-50 ms-1">ลบ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+   
+</div>
+
+
 <div class="offcanvas offcanvas-end" tabindex="-1" id="canvasaddtable" aria-labelledby="canvasaddtable">
     <div class="offcanvas-header">
         <h5 class="offcanvas-title">ข้อมูลโต๊ะ</h5>
@@ -16,8 +45,7 @@
         <form class="">
             <div class="mb-3">
                 <label for="tableName" class="form-label">ชื่อโต๊ะ</label>
-                <label type="hidden" id="tableName" name="tableName"></label>
-                <input type="text" class="form-control mb-3" placeholder="โต๊ะ1..,โต๊ะ2..,โต๊ะVip1.." id="categoryName" name="categoryName" required>
+                <input type="text" class="form-control mb-3" placeholder="โต๊ะ1..,โต๊ะ2..,โต๊ะVip1.." id="tableName" name="tableName" required>
             </div>
             <div class="form-check form-switch mb-3">
                 <label for="status" class="form-lable">สถานะ</label>
@@ -43,28 +71,27 @@
         }).then((result) => {
             let data = {
                 case: 'create_table',
-                name: $('#tableName').val(),
+                nametable: $('#tableName').val(),
                 status: $('#status').is(':checked') ? 1 : 0
             }
-            console.log(data);
-            
-            // if (result.isConfirmed) {
-            //     $.ajax({
-            //         url: '/api/api_manage_menu.php',
-            //         method: 'POST',
-            //         data: data,
-            //         dataType: 'json',
-            //         success: function(response) {
-            //             if (response.status === 'success') {
-                            
-            //             }
-            //         },
-            //         error: function(xhr) {
-            //             Swal.fire('ผิดพลาด', xhr.responseText, 'error');
-            //             console.log(xhr.responseText);
-            //         }
-            //     })
-            // }
+
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/api/api_manage_table.php',
+                    method: 'POST',
+                    data: data,
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            Swal.fire('สำเร็จ', response.message, 'success');
+                        }
+                    },
+                    error: function(xhr) {
+                        Swal.fire('ผิดพลาด', xhr.responseText, 'error');
+                        console.log(xhr.responseText);
+                    }
+                })
+            }
         });
     });
 </script>

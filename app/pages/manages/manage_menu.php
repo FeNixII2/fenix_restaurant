@@ -2,17 +2,19 @@
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
         <div class="fw-bold fs-3">เมนู</div>
         <div class="gap-2">
-            <button class="btn btn-info text-white" type="button" data-bs-toggle="offcanvas" data-bs-target="#canvasfoodcategory" aria-controls="offcanvasRight">+ ประเภท</button>
-            <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#canvasaddfood" aria-controls="offcanvasRight">+ อาหาร</button>
-            <button class="btn btn-success" type="button" data-bs-toggle="offcanvas" data-bs-target="#canvasstock" aria-controls="offcanvasRight">+ สต๊อก</button>
+            <button class="btn btn-info text-white " type="button" data-bs-toggle="offcanvas" data-bs-target="#canvasfoodcategory" aria-controls="offcanvasRight">+ ประเภท</button>
+            <button class="btn btn-primary " type="button" data-bs-toggle="offcanvas" data-bs-target="#canvasaddfood" aria-controls="offcanvasRight">+ อาหาร</button>
+            <button class="btn btn-success " type="button" data-bs-toggle="offcanvas" data-bs-target="#canvasstock" aria-controls="offcanvasRight">+ สต๊อก</button>
         </div>
     </div>
 </div>
 
 <div class="bg-white p-2 rounded-3 mb-3 shadow-sm">
-    <div class="my-3 d-flex justify-content-between align-items-center">
-        <div class="fw-bold fs-4">รายการทั้งหมด</div>
-        <input type="text" class="form-control " placeholder="ค้นหา..." style="width:15rem" id="searchInput" onkeyup="findMenu()">
+    <div class="my-3 row">
+        <div class="col-sm-12 col-md-6">
+        <div class="fw-bold fs-4">รายการทั้งหมด</div></div>
+        <div class="col-sm-12 col-md-6 d-flex justify-content-md-end justify-content-start">
+        <input type="text" class="form-control " placeholder="ค้นหา..." style="width: 20rem;"   id="searchInput" onkeyup="findMenu()"></div>
     </div>
     <div class="table-responsive ">
         <table class="table table-borderless text-nowrap">

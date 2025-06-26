@@ -12,11 +12,16 @@
 <div class="bg-white p-2 rounded-3 mb-3 shadow-sm">
     <div class="my-3 row">
         <div class="col-sm-12 col-md-6">
-        <div class="fw-bold fs-4">รายการทั้งหมด</div></div>
+            <div class="fw-bold fs-4">รายการทั้งหมด</div>
+        </div>
         <div class="col-sm-12 col-md-6 d-flex justify-content-md-end justify-content-start">
-        <input type="text" class="form-control " placeholder="ค้นหา..." style="width: 20rem;"   id="searchInput" onkeyup="findMenu()"></div>
+            <input type="text" class="form-control " placeholder="ค้นหา..." style="width: 20rem;" id="searchInput" onkeyup="findMenu()">
+        </div>
     </div>
-    <div class="table-responsive ">
+    <div class="table-responsive">
+        <div class="text-center" id="tableLoader">
+            <div class="spinner-border" role="status"></div>
+        </div>
         <table class="table table-borderless text-nowrap">
             <thead>
                 <tr>
@@ -124,6 +129,7 @@
     let CategoryArray = [];
     let MenuArray = [];
     let Image_Id;
+    let searchTimeout;
 
     $(document).ready(function() {
         getCategory();
@@ -133,16 +139,21 @@
     });
 
     function findMenu() {
-        const keyword = document.getElementById("searchInput").value.trim().toLowerCase();
-        const results = MenuArray.filter(item =>
-            item.name.toLowerCase().includes(keyword) ||
-            item.price.toString().includes(keyword)
-        );
-        if (results.length === 0) {
+
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+
+            const keyword = document.getElementById("searchInput").value.trim().toLowerCase();
+            const results = MenuArray.filter(item =>
+                item.name.toLowerCase().includes(keyword) ||
+                item.price.toString().includes(keyword) ||
+                item.category_name.toLowerCase().includes(keyword) ||
+                item.details.toLowerCase().includes(keyword)
+
+            );
+
             showMenu(results);
-        } else {
-            showMenu(results);
-        }
+        }, 600);
     }
 
     function showMenu(data) {
@@ -211,7 +222,7 @@
     function getCategory() {
         $.ajax({
             url: '/api/api_manage_menu.php',
-            method: 'POST',
+            method: 'GET',
             data: {
                 case: 'getCategory'
             },
@@ -253,17 +264,24 @@
     function getMenu() {
         $.ajax({
             url: '/api/api_manage_menu.php',
-            method: 'POST',
+            method: 'GET',
             data: {
                 case: 'getAllMenu'
             },
             dataType: 'json',
+            beforeSend: function() {
+                $('#tableLoader').removeClass('d-none');
+                $('#table-listmenu').empty(); // เคลียร์ table ก่อน
+            },
             success: function(response) {
                 if (response.status === 'success') {
                     MenuArray = response.data
                     showMenu(response.data);
                 }
-            }
+            },
+            complete: function() {
+                $('#tableLoader').addClass('d-none');
+            },
         });
     }
 
@@ -381,7 +399,7 @@
     $('#canvasstock').on('shown.bs.offcanvas', function() {
         $.ajax({
             url: '/api/api_manage_menu.php',
-            method: 'POST',
+            method: 'GET',
             data: {
                 case: 'getAllMenu'
             },

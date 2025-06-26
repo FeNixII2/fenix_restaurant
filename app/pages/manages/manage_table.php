@@ -7,32 +7,10 @@
     </div>
 </div>
 
-<div class="row">
-   
-
-    <div class="col-sm-12 col-md-4 col-lg-3 mb-4">
-        <div class="p-3 shadow rounded-4">
-            <div class="card-body d-flex flex-column justify-content-between h-100">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="fw-bold text-primary mb-0 fs-3 text-danger">โต๊ะ 1</h5>
-                    <span class="badge bg-success">ว่าง</span>
-                </div>
-
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <label class="form-check-label me-2 fs-5" for="status1">เปิดใช้งาน</label>
-                    <div class="form-check form-switch fs-4">
-                        <input class="form-check-input" type="checkbox" role="switch" id="status1" name="status" checked>
-                    </div>
-                </div>
-
-                <div class="d-flex justify-content-between">
-                    <button class="btn btn-warning text-white btn-sm w-50 me-1">แก้ไข</button>
-                    <button class="btn btn-danger btn-sm w-50 ms-1">ลบ</button>
-                </div>
-            </div>
-        </div>
+<div class="row" id="alltable">
+    <div class="text-center" id="tableLoader">
+        <div class="spinner-border" role="status"></div>
     </div>
-   
 </div>
 
 
@@ -61,6 +39,169 @@
 </div>
 
 <script>
+    $(document).ready(function() {
+        getTable();
+    })
+
+    function getTable() {
+        $.ajax({
+            url: '/api/api_manage_table.php',
+            method: 'GET',
+            data: {
+                case: 'get_table'
+            },
+            dataType: 'json',
+            beforeSend: function() {
+                $('#tableLoader').removeClass('d-none');
+                $('#table-listmenu').empty(); // เคลียร์ table ก่อน
+            },
+            success: function(response) {
+                if (response.status === 'success') {
+                    let listtable = $('#alltable');
+                    listtable.empty();
+                    if (response.data.length === 0) {
+                        listtable.append(`
+                                        <tr class="border-top">
+                                            <td colspan="6" class="text-center text-muted">ไม่มีข้อมูล</td>
+                                        </tr>
+                                    `);
+                    } else {
+                        response.data.forEach(function(table) {
+                            let stateText = table.table_state === 1 ? 'มีลูกค้า' : 'ว่าง';
+                            let stateBadge = table.table_state === 1 ? 'bg-warning text-dark' : 'bg-success';
+                            let isDisabled = table.status === 0;
+
+                            let overlay = isDisabled ?
+                                `<div class="position-absolute top-0 start-0 w-100 h-100 bg-light rounded-4" style="opacity: 0.5; z-index: 1;"></div>` :
+                                '';
+
+                            listtable.append(`
+                                    <div class="col-sm-12 col-md-4 col-lg-3 mb-4">
+                                        <div class="position-relative ${isDisabled ? 'opacity-50' : ''}">
+                                            ${overlay}
+                                            <div class="p-3 shadow rounded-4 bg-white position-relative" style="z-index: 2;">
+                                                <div class="card-body d-flex flex-column justify-content-between h-100">
+                                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                                        <h5 class="fw-bold mb-0 fs-3 ${isDisabled ? 'text-muted' : 'text-primary'}">${table.name}</h5>
+                                                        <span class="badge ${stateBadge}">${stateText}</span>
+                                                    </div>
+
+                                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                                        <label class="form-check-label me-2 fs-5">สถานะ</label>
+                                                        <div class="form-check form-switch fs-4">
+                                                          <input
+                                                            class="form-check-input"
+                                                            type="checkbox"
+                                                            role="switch"
+                                                            onchange="event.preventDefault(); changeStatus(this, ${table.id}, ${table.status}, ${table.table_state})"
+                                                            ${table.status === 1 ? 'checked' : ''}>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="d-flex justify-content-between">
+                                                        <button id="btnEdit" class="btn btn-warning text-white btn-sm w-50 me-1">แก้ไข</button>
+                                                        <button  class="btn btn-danger btn-sm w-50 ms-1" onClick="deleteTable('${table.name}',${table.table_state},${table.id})">ลบ</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `);
+                        });
+                    }
+                }
+            },
+            complete: function() {
+                $('#tableLoader').addClass('d-none');
+            },
+        })
+    }
+
+    function changeStatus(checkbox, tableId, currentStatus, state) {
+        const newStatus = currentStatus === 1 ? 0 : 1;
+        if (state === 1) {
+            Swal.fire('ผิดพลาด', 'ยังมีลูกค้านั่งอยู่ไม่สามารถปิดโต๊ะได้', 'error');
+            checkbox.checked = currentStatus === 1;
+            return
+        }
+        Swal.fire({
+            title: `คุณต้องการ ${newStatus === 1 ? 'เปิด' : 'ปิด'} โต๊ะใช่หรือไม่?`,
+            showDenyButton: true,
+            confirmButtonText: "ใช่",
+            denyButtonText: `ยกเลิก`
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // เรียก API ไปอัปเดต status
+                $.ajax({
+                    url: '/api/api_manage_table.php',
+                    method: 'POST',
+                    data: {
+                        case: 'toggle_status',
+                        id: tableId,
+                        status: newStatus
+                    },
+                    success: function(res) {
+                        if (res.status === 'success') {
+                            Swal.fire('สำเร็จ', res.message, 'success');
+                            // เซ็ต checkbox ใหม่ด้วย JS (ถ้าจำเป็น)
+                            checkbox.checked = newStatus === 1;
+                        } else {
+                            Swal.fire('ผิดพลาด', res.message, 'error');
+                            checkbox.checked = currentStatus === 1; // ย้อนกลับ
+                        }
+                        getTable();
+                    },
+                    error: function() {
+                        Swal.fire('ผิดพลาด', 'ไม่สามารถเชื่อมต่อ API ได้', 'error');
+                        checkbox.checked = currentStatus === 1; // ย้อนกลับ
+                    }
+                });
+            } else {
+                // ถ้าผู้ใช้กดปิดหรือยกเลิก => ย้อน checkbox กลับ
+                checkbox.checked = currentStatus === 1;
+            }
+        });
+    }
+
+    function deleteTable(name, state, id) {
+        if (state === 1) {
+            Swal.fire('ผิดพลาด', 'ยังมีลูกค้านั่งอยู่ไม่สามารถลบโต๊ะได้', 'error');
+            return
+        }
+        Swal.fire({
+            title: `คุณต้องการลบ ${name} ?`,
+            showDenyButton: true,
+            confirmButtonText: "ใช่",
+            denyButtonText: `ยกเลิก`
+        }).then((result) => {
+            if (result.isConfirmed) {
+                let data = {
+                    case: 'delete_table',
+                    id: id
+                }
+
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '/api/api_manage_table.php',
+                        method: 'POST',
+                        data: data,
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response.status === 'success') {
+                                Swal.fire('สำเร็จ', response.message, 'success');
+                                getTable();
+                            }
+                        },
+                        error: function(xhr) {
+                            Swal.fire('ผิดพลาด', xhr.responseText, 'error');
+                            console.log(xhr.responseText);
+                        }
+                    })
+                }
+            }
+        })
+    }
+
     $('#addCategory').on('submit', function(e) {
         e.preventDefault();
         Swal.fire({

@@ -17,7 +17,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $username = $_POST['username'] ?? '';
             $password = $_POST['password'] ?? '';
 
-            // เตรียมคำสั่ง SQL แบบ prepared statement
             $stmt = $db->prepare("SELECT id, username, password, role FROM employee WHERE username = :username AND is_active = 1 LIMIT 1");
             $stmt->bindParam(':username', $username);
             $stmt->execute();
@@ -27,7 +26,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 if (password_verify($password, $user['password'])) {
                     
-                    // สร้าง session
                     $_SESSION['user'] = [
                         'id' => $user['id'],
                         'username' => $user['username'],

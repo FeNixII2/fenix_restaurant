@@ -1,8 +1,8 @@
 <div class="row mb-3">
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-        <div class="fw-bold fs-3">โต๊ะ</div>
+        <div class="fw-bold fs-3 text-warning">โต๊ะ</div>
         <div class="gap-2">
-            <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" data-bs-target="#canvasaddtable" aria-controls="offcanvasRight">+ โต๊ะ</button>
+            <button class="btn btn-warning text-white" type="button" data-bs-toggle="offcanvas" data-bs-target="#canvasaddtable" aria-controls="offcanvasRight"><i class="fa-solid fa-chair"></i> โต๊ะ</button>
         </div>
     </div>
 </div>
@@ -13,14 +13,13 @@
     </div>
 </div>
 
-
 <div class="offcanvas offcanvas-end" tabindex="-1" id="canvasaddtable" aria-labelledby="canvasaddtable">
     <div class="offcanvas-header">
-        <h5 class="offcanvas-title">ข้อมูลโต๊ะ</h5>
+        <h5 class="offcanvas-title fw-bold text-warning">ข้อมูลโต๊ะ</h5>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
-    <div class="offcanvas-body" id="addCategory">
-        <form class="">
+    <div class="offcanvas-body" id="addTable">
+        <form id="form-add">
             <div class="mb-3">
                 <label for="tableName" class="form-label">ชื่อโต๊ะ</label>
                 <input type="text" class="form-control mb-3" placeholder="โต๊ะ1..,โต๊ะ2..,โต๊ะVip1.." id="tableName" name="tableName" required>
@@ -29,14 +28,32 @@
                 <label for="status" class="form-lable">สถานะ</label>
                 <input class="form-check-input" type="checkbox" role="switch" id="status" name="status" checked>
             </div>
-            <button type="submit" id="btn-addCategory" class="btn btn-primary">เพิ่มประเภท</button>
-            <button type="submit" id="btn-editCategory" class="btn btn-warning text-white" style="display:none;">ยืนยันการแก้ไข</button>
-            <button id="btn-cancelCategory" class="btn btn-danger" onClick="resetFormCategory()">ยกเลิก</button>
+            <button type="submit" id="btn-addTable" class="btn btn-warning text-white">เพิ่มโต๊ะ</button>
         </form>
-        <div class="mt-3" id="list-catagory">
-        </div>
     </div>
 </div>
+
+<div class="offcanvas offcanvas-end" tabindex="-1" id="canvasedittable" aria-labelledby="canvasedittable">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title fw-bold text-warning">แก้ไขข้อมูลโต๊ะ</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body" id="editTable">
+        <form id="form-edit">
+            <div class="mb-3">
+                <input type="hidden" id="editTableId">
+                <label for="tableName" class="form-label">ชื่อโต๊ะ</label>
+                <input type="text" class="form-control mb-3" placeholder="โต๊ะ1..,โต๊ะ2..,โต๊ะVip1.." id="edittableName" name="edittableName" required>
+            </div>
+            <div class="form-check form-switch mb-3">
+                <label for="status" class="form-lable">สถานะ</label>
+                <input class="form-check-input" type="checkbox" role="switch" id="editstatus" name="editstatus" checked>
+            </div>
+            <button type="submit" id="btn-editTable" class="btn btn-warning text-white">ยืนยันการแก้ไข</button>
+        </form>
+    </div>
+</div>
+
 
 <script>
     $(document).ready(function() {
@@ -68,7 +85,7 @@
                     } else {
                         response.data.forEach(function(table) {
                             let stateText = table.table_state === 1 ? 'มีลูกค้า' : 'ว่าง';
-                            let stateBadge = table.table_state === 1 ? 'bg-warning text-dark' : 'bg-success';
+                            let stateBadge = table.table_state === 1 ? 'bg-white text-warning' : 'bg-white text-dark';
                             let isDisabled = table.status === 0;
 
                             let overlay = isDisabled ?
@@ -76,13 +93,13 @@
                                 '';
 
                             listtable.append(`
-                                    <div class="col-sm-12 col-md-4 col-lg-3 mb-4">
+                                    <div class="col-6 col-sm-6 col-md-4 col-lg-3 mb-4">
                                         <div class="position-relative ${isDisabled ? 'opacity-50' : ''}">
                                             ${overlay}
-                                            <div class="p-3 shadow rounded-4 bg-white position-relative" style="z-index: 2;">
+                                            <div class="p-3 shadow rounded-4 bg-dark text-white position-relative" style="z-index: 2;">
                                                 <div class="card-body d-flex flex-column justify-content-between h-100">
                                                     <div class="d-flex justify-content-between align-items-center mb-3">
-                                                        <h5 class="fw-bold mb-0 fs-3 ${isDisabled ? 'text-muted' : 'text-primary'}">${table.name}</h5>
+                                                        <h5 class="fw-bold mb-0 fs-3 ${isDisabled ? 'text-white' : 'text-white'}">${table.name}</h5>
                                                         <span class="badge ${stateBadge}">${stateText}</span>
                                                     </div>
 
@@ -99,8 +116,8 @@
                                                     </div>
 
                                                     <div class="d-flex justify-content-between">
-                                                        <button id="btnEdit" class="btn btn-warning text-white btn-sm w-50 me-1">แก้ไข</button>
-                                                        <button  class="btn btn-danger btn-sm w-50 ms-1" onClick="deleteTable('${table.name}',${table.table_state},${table.id})">ลบ</button>
+                                                        <button class="btn btn-warning text-white btn-sm w-50 me-1" id="btn-edit" data-table='${JSON.stringify(table)}'><i class="fa-solid fa-pencil"></i></button>
+                                                        <button  class="btn btn-danger btn-sm w-50 ms-1" onClick="deleteTable('${table.name}',${table.table_state},${table.id})"><i class="fa-solid fa-trash"></i></button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -202,7 +219,7 @@
         })
     }
 
-    $('#addCategory').on('submit', function(e) {
+    $('#addTable').on('submit', function(e) {
         e.preventDefault();
         Swal.fire({
             title: `คุณต้องการเพิ่มโต๊ะ ?`,
@@ -225,6 +242,57 @@
                     success: function(response) {
                         if (response.status === 'success') {
                             Swal.fire('สำเร็จ', response.message, 'success');
+                            getTable();
+                            $('#form-add')[0].reset();
+                            $('#canvasaddtable').offcanvas('hide');
+                        }else{
+                            Swal.fire('ผิดพลาด', response.message, 'error');
+                        }
+                    },
+                    error: function(xhr) {
+                        Swal.fire('ผิดพลาด', xhr.responseText, 'error');
+                        console.log(xhr.responseText);
+                    }
+                })
+            }
+        });
+    });
+
+    $(document).on('click', '#btn-edit', function(e) {
+        e.preventDefault();
+        const data = JSON.parse($(this).attr('data-table'));
+        $('#edittableName').val(data['name']);
+        $('#editstatus').prop('checked', data['status'] === 1);
+        $('#canvasedittable').offcanvas('show');
+        $('#editTableId').val(data['id']);
+    })
+    $('#editTable').on('submit', function(e) {
+        e.preventDefault();
+        Swal.fire({
+            title: `คุณต้องการแก้ไขโต๊ะ ?`,
+            showDenyButton: true,
+            confirmButtonText: "ใช่",
+            denyButtonText: `ยกเลิก`
+        }).then((result) => {
+            let data = {
+                case: 'edit_table',
+                nametable: $('#edittableName').val(),
+                status: $('#editstatus').is(':checked') ? 1 : 0,
+                id: $('#editTableId').val()
+            }
+
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/api/api_manage_table.php',
+                    method: 'POST',
+                    data: data,
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            Swal.fire('สำเร็จ', response.message, 'success');
+                            getTable();
+                            $('#form-edit')[0].reset();
+                            $('#canvasedittable').offcanvas('hide');
                         }
                     },
                     error: function(xhr) {

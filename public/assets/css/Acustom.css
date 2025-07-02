@@ -2,22 +2,37 @@ html,
 body {
     font-family: 'Kanit', sans-serif;
     height: 100%;
-}
-
-
-.bg-login {
-    background-color: #212529;
-    /* dark background */
-    height: 100vh;
+    background-color: #fff;
 }
 
 .login-box {
-    background-color: #f8f9fa;
-    /* light gray */
-    border-radius: 1rem;
+    background-color: #fff;
+    border-radius: 0.5rem;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
     width: 100%;
     max-width: 400px;
+}
+
+.bg-login {
+    height: 100vh;
+    background-image: url("/assets/images/bg_login.webp");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+}
+
+.bg-login::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-color: rgba(255, 255, 255, 0.26);
+    z-index: 1;
+}
+
+.bg-login>* {
+    position: relative;
+    z-index: 2;
 }
 
 .gfg {
@@ -40,12 +55,19 @@ body {
 }
 
 .mynav li a.active {
-    background: rgba(255, 255, 255, 0.2);
+    background: #FFC107;
+    color: white;
+    font-weight: bold;
 }
 
+
 .mynav li a:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: #FFC107;
+    color: white;
+    font-weight: bold;
 }
+
+
 
 .mynav li a i {
     width: 25px;
@@ -66,14 +88,14 @@ body {
 }
 
 .menu-img {
-  height: 10rem;
-  object-fit: cover;
-  width: 100%;
-  transition: transform 0.3s ease-in-out;
+    height: 10rem;
+    object-fit: cover;
+    width: 100%;
+    transition: transform 0.3s ease-in-out;
 }
 
 .menu-card:hover .menu-img {
-  transform: scale(1.05);
+    transform: scale(1.05);
 }
 
 
@@ -82,7 +104,7 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%) rotate(-25deg);
-    background: rgba(220, 53, 69, 0.9); /* สีแดง Bootstrap danger */
+    background: rgba(220, 53, 69, 0.9);
     color: white;
     padding: 5px 40px;
     font-weight: bold;
@@ -92,4 +114,113 @@ body {
     z-index: 10;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     white-space: nowrap;
+}
+
+.payment-card {
+    transition: border-color 0.3s, box-shadow 0.3s;
+    border: 2px solid transparent;
+    user-select: none;
+}
+
+.payment-card.selected {
+    border-color: #0d6efd;
+    box-shadow: 0 0 10px rgba(13, 110, 253, 0.5);
+    background-color: #e7f1ff;
+}
+
+.payment-card:hover {
+    border-color: #0d6efd;
+    cursor: pointer;
+}
+
+.nav-tabs .nav-link {
+    color: black;
+    transition: color 0.3s ease, font-size 0.3s ease, transform 0.3s ease;
+}
+
+.nav-tabs .nav-link.active {
+    font-size: x-large;
+    font-weight: bold;
+    color: #FFC107;
+}
+
+.nav-tabs .nav-link:hover {
+    font-size: x-large;
+    font-weight: bold;
+    color: #FFC107;
+}
+
+.table-card {
+    position: relative;
+    padding: 1rem 1rem;
+    text-align: center;
+}
+
+.status-badge {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+}
+
+.table-icon {
+    font-size: 2.5rem;
+    color: #6c757d;
+}
+
+.table-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+}
+
+.table-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.table-card:hover .status-badge.bg-white {
+    color: #212529 !important;
+    background-color: #ffc107 !important;
+}
+
+.table-card:hover h5.fw-bold.text-white {
+    color: #ffc107 !important;
+}
+
+.table-card:hover i.text-white {
+    color: #ffc107 !important;
+}
+
+.table-card:hover span.text-white {
+    background-color: #ffc107 !important;
+
+}
+
+.active>.page-link,
+.page-link.active {
+    background-color: #ffc107 !important;
+    border-color: #ffc107 !important;
+    color: #fff !important;
+}
+
+
+.pagination a {
+    color: #212529 !important;
+}
+
+#table-menu_length,
+#table-menu_filter {
+  margin-bottom: 0.5rem;
+}
+
+#table-em_length,
+#table-em_filter {
+  margin-bottom: 0.5rem;
+}
+
+@media (min-width: 992px) {
+  #bdSidebar {
+    height: 100vh !important;
+    position: sticky !important;
+    top: 0 !important;
+  }
 }

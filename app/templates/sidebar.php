@@ -4,81 +4,90 @@ $id = $_SESSION['user']['id'] ?? null;
 ?>
 
 <div id="bdSidebar"
-    class="d-flex flex-column 
-                    flex-shrink-0 
-                    p-3 bg-dark
-                    text-white offcanvas-md offcanvas-start
-                   "
-    style="width:20rem">
+    class="d-flex flex-column flex-shrink-0 p-3 bg-dark text-white offcanvas-lg offcanvas-start"
+    style="width:20rem; ">
 
     <div class="d-flex justify-content-between align-items-center">
-        <a href="#"
-            class="navbar-brand fs-3 fw-bold">FenixRestaurant
+        <a href="/dashboard"
+            class="navbar-brand fs-3 fw-bold">
+            <img src="/assets/images/letter-f.png" alt="" style="width:3rem;height:3rem">
+            enixRestaurant
         </a>
-        <button type="button" class="btn-close btn-close-white d-md-none" id="btn-close-sidebar"></button>
+        <button type="button" class="btn-close btn-close-white d-lg-none" id="btn-close-sidebar"></button>
     </div>
     <hr>
     <ul class="mynav nav nav-pills flex-column mb-auto">
         <?php if ($role == 1 or $role == 4): // admin เห็นทุกอย่าง 
         ?>
             <li class="nav-item mb-1">
-                <a href="/dashboard">
+                <a href="/dashboard" class="<?= ($route === 'dashboard' ? 'active' : '') ?>">
                     <i class="fa-solid fa-house"></i>
                     หน้าหลัก
                 </a>
             </li>
 
             <li class="nav-item mb-1">
-                <a href="/order">
+                <a href="/order" class="<?= ($route === 'order' ? 'active' : '') ?>">
                     <i class="fa-solid fa-bell-concierge"></i>
                     สั่งอาหาร
-                    <span class="notification-badge">5</span>
                 </a>
             </li>
 
             <li class="nav-item mb-1">
-                <a href="/kitchen">
+                <a href="/kitchen" class="<?= ($route === 'kitchen' ? 'active' : '') ?>">
                     <i class="fa-solid fa-kitchen-set"></i>
                     งานครัว
                 </a>
             </li>
             <li class="nav-item mb-1">
-                <a href="/cashier">
+                <a href="/cashier" class="<?= ($route === 'cashier' ? 'active' : '') ?>">
                     <i class="fa-solid fa-kitchen-set"></i>
                     แคชเชียร์
                 </a>
             </li>
+
+            <?php
+            $settingsPages = [
+                'manages/manage_menu',
+                'manages/manage_table',
+                'manages/manage_employee'
+            ];
+
+            $isSettingsOpen = in_array($route, $settingsPages);
+            ?>
+
 
             <li class="sidebar-item nav-item mb-1">
                 <a href="#"
                     class="sidebar-link collapsed d-flex justify-content-between align-items-center"
                     data-bs-toggle="collapse"
                     data-bs-target="#settings"
-                    aria-expanded="false"
+                    aria-expanded="<?= $isSettingsOpen ? 'true' : 'false' ?>"
                     aria-controls="settings"
                     id="settingsToggle">
-                    <div class=""><i class="fas fa-cog pe-2"></i>
+                    <div><i class="fas fa-cog pe-2"></i>
                         <span class="topic">ตั้งค่า </span>
                     </div>
-                    <i class="fa-solid fa-caret-down" id="settingsCaret"></i>
+                    <i class="fa-solid <?= $isSettingsOpen ? 'fa-caret-up' : 'fa-caret-down' ?>" id="settingsCaret"></i>
                 </a>
+
                 <ul id="settings"
-                    class="sidebar-dropdown list-unstyled collapse"
+                    class="sidebar-dropdown list-unstyled collapse <?= $isSettingsOpen ? 'show' : '' ?>"
                     data-bs-parent="#sidebar">
-                    <li class="sidebar-item ">
-                        <a href="/manages/manage_menu" class="sidebar-link ps-4">
+                    <li class="sidebar-item">
+                        <a href="/manages/manage_menu" class="sidebar-link ps-4 my-1 <?= ($route === 'manages/manage_menu' ? 'active' : '') ?>">
                             <i class="fa-solid fa-bowl-rice pe-2"></i>
                             <span class="topic">เมนู</span>
                         </a>
                     </li>
                     <li class="sidebar-item">
-                        <a href="/manages/manage_table" class="sidebar-link ps-4">
+                        <a href="/manages/manage_table" class="sidebar-link ps-4 mb-1 <?= ($route === 'manages/manage_table' ? 'active' : '') ?>">
                             <i class="fa-solid fa-stroopwafel pe-2"></i>
                             <span class="topic">โต๊ะ</span>
                         </a>
                     </li>
                     <li class="sidebar-item">
-                        <a href="/manages/manage_employee" class="sidebar-link ps-4">
+                        <a href="/manages/manage_employee" class="sidebar-link ps-4 mb-1 <?= ($route === 'manages/manage_employee' ? 'active' : '') ?>">
                             <i class="fa-solid fa-users pe-2"></i>
                             <span class="topic">พนักงาน</span>
                         </a>
@@ -89,20 +98,19 @@ $id = $_SESSION['user']['id'] ?? null;
         <?php elseif ($role == 2): // staff เห็นแค่ order 
         ?>
             <li class="nav-item mb-1">
-                <a href="/dashboard">
+                <a href="/dashboard" class="<?= ($route === 'dashboard' ? 'active' : '') ?>">
                     <i class="fa-solid fa-house"></i>
                     หน้าหลัก
                 </a>
             </li>
             <li class="nav-item mb-1">
-                <a href="/order">
+                <a href="/order" class="<?= ($route === 'order' ? 'active' : '') ?>">
                     <i class="fa-solid fa-bell-concierge"></i>
                     สั่งอาหาร
-                    <span class="notification-badge">5</span>
                 </a>
             </li>
             <li class="nav-item mb-1">
-                <a href="/cashier">
+                <a href="/cashier" class="<?= ($route === 'cashier' ? 'active' : '') ?>">
                     <i class="fa-solid fa-kitchen-set"></i>
                     แคชเชียร์
                 </a>
@@ -110,13 +118,13 @@ $id = $_SESSION['user']['id'] ?? null;
         <?php elseif ($role == 3): // staff เห็นแค่ order 
         ?>
             <li class="nav-item mb-1">
-                <a href="/dashboard">
+                <a href="/dashboard" class="<?= ($route === 'dashboard' ? 'active' : '') ?>">
                     <i class="fa-solid fa-house"></i>
                     หน้าหลัก
                 </a>
             </li>
             <li class="nav-item mb-1">
-                <a href="/kitchen">
+                <a href="/kitchen" class="<?= ($route === 'kitchen' ? 'active' : '') ?>">
                     <i class="fa-solid fa-kitchen-set"></i>
                     งานครัว
                 </a>

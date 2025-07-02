@@ -1,47 +1,18 @@
 <div class="row mb-3">
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-        <div class="fw-bold fs-3">เมนู</div>
+        <div class="fw-bold fs-3 text-warning">เมนู</div>
         <div class="gap-2">
-            <button class="btn btn-info text-white " type="button" data-bs-toggle="offcanvas" data-bs-target="#canvasfoodcategory" aria-controls="offcanvasRight">+ ประเภท</button>
-            <button class="btn btn-primary " type="button" data-bs-toggle="offcanvas" data-bs-target="#canvasaddfood" aria-controls="offcanvasRight">+ อาหาร</button>
-            <button class="btn btn-success " type="button" data-bs-toggle="offcanvas" data-bs-target="#canvasstock" aria-controls="offcanvasRight">+ สต๊อก</button>
+            <button class="btn btn-warning text-white " type="button" data-bs-toggle="offcanvas" data-bs-target="#canvasfoodcategory" aria-controls="offcanvasRight"><i class="fa-solid fa-list"></i> ประเภท</button>
+            <button class="btn btn-warning  text-white " type="button" data-bs-toggle="offcanvas" data-bs-target="#canvasaddfood" aria-controls="offcanvasRight"><i class="fa-solid fa-bowl-food"></i> อาหาร</button>
+            <button class="btn btn-warning  text-white " type="button" data-bs-toggle="offcanvas" data-bs-target="#canvasstock" aria-controls="offcanvasRight"><i class="fa-solid fa-clipboard-list"></i> สต๊อก</button>
         </div>
     </div>
 </div>
 
-<div class="bg-white p-2 rounded-3 mb-3 shadow-sm">
-    <div class="my-3 row">
-        <div class="col-sm-12 col-md-6">
-            <div class="fw-bold fs-4">รายการทั้งหมด</div>
-        </div>
-        <div class="col-sm-12 col-md-6 d-flex justify-content-md-end justify-content-start">
-            <input type="text" class="form-control " placeholder="ค้นหา..." style="width: 20rem;" id="searchInput" onkeyup="findMenu()">
-        </div>
-    </div>
-    <div class="table-responsive">
-        <div class="text-center" id="tableLoader">
-            <div class="spinner-border" role="status"></div>
-        </div>
-        <table class="table table-borderless text-nowrap">
-            <thead>
-                <tr>
-                    <th>เมนู</th>
-                    <th>ประเภท</th>
-                    <th>ราคา</th>
-                    <th>สถานะ</th>
-                    <th>สต๊อก</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody id="table-listmenu" class=" align-middle">
-            </tbody>
-        </table>
-    </div>
-</div>
 
 <div class="offcanvas offcanvas-end" tabindex="-1" id="canvasfoodcategory" aria-labelledby="canvasfoodcategory">
     <div class="offcanvas-header">
-        <h5 class="offcanvas-title">ข้อมูลประเภท</h5>
+        <h5 class="offcanvas-title fw-bold text-warning">ข้อมูลประเภท</h5>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body" id="addCategory">
@@ -51,7 +22,7 @@
                 <label type="hidden" id="categoryId" name="categoryId"></label>
                 <input type="text" class="form-control mb-3" placeholder="ต้ม..,ผัด..,แกง.." id="categoryName" name="categoryName" required>
             </div>
-            <button type="submit" id="btn-addCategory" class="btn btn-primary">เพิ่มประเภท</button>
+            <button type="submit" id="btn-addCategory" class="btn btn-warning text-white">เพิ่มประเภท</button>
             <button type="submit" id="btn-editCategory" class="btn btn-warning text-white" style="display:none;">ยืนยันการแก้ไข</button>
             <button id="btn-cancelCategory" class="btn btn-danger" onClick="resetFormCategory()">ยกเลิก</button>
         </form>
@@ -63,7 +34,7 @@
 
 <div class="offcanvas offcanvas-end" tabindex="-1" id="canvasaddfood" aria-labelledby="canvasaddfood">
     <div class="offcanvas-header">
-        <h5 class="offcanvas-title">ข้อมูลอาหาร</h5>
+        <h5 class="offcanvas-title fw-bold text-warning">ข้อมูลอาหาร</h5>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <form class="offcanvas-body" id="addMenu" enctype="multipart/form-data">
@@ -94,7 +65,7 @@
             <input class="form-check-input" type="checkbox" role="switch" id="status" name="status" checked>
             <label class="form-check-label" for="status">สถานะการเปิดขาย</label>
         </div>
-        <button type="submit" id="btn-addMenu" class="btn btn-primary">เพิ่มอาหาร</button>
+        <button type="submit" id="btn-addMenu" class="btn btn-warning text-white">เพิ่มอาหาร</button>
         <button type="submit" id="btn-editMenu" class="btn btn-warning text-white" style="display:none;">ยืนยันการแก้ไข</button>
         <button id="btn-cancelMenu" class="btn btn-danger" onClick="resetFormMenu()">ยกเลิก</button>
     </form>
@@ -103,11 +74,11 @@
 
 <div class="offcanvas offcanvas-end" tabindex="-1" id="canvasstock" aria-labelledby="canvasstock">
     <div class="offcanvas-header">
-        <h5 class="offcanvas-title">จัดการสต๊อก</h5>
+        <h5 class="offcanvas-title fw-bold text-warning">จัดการสต๊อก</h5>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <div class="mx-2">
-        <div class="table-responsive ">
+        <div class="table-responsive mb-3" style="max-height: 85vh; overflow-y: auto; display: block;">
             <table class="table table-borderless text-nowrap">
                 <thead>
                     <tr>
@@ -119,10 +90,27 @@
                 </tbody>
             </table>
         </div>
-        <div class="d-flex justify-content-end px-2">
-            <button class="btn btn-primary" id="btn-confirm-stock">ยืนยันแก้ไขสต๊อก</button>
+        <div class="d-flex justify-content-start">
+            <button class="btn btn-warning text-white" id="btn-confirm-stock">ยืนยันแก้ไขสต๊อก</button>
         </div>
     </div>
+</div>
+
+<div class="table-responsive">
+    <table id="table-menu" class="display table mb-0">
+        <thead>
+            <tr>
+                <th>เมนู</th>
+                <th>ประเภท</th>
+                <th>ราคา</th>
+                <th>สถานะ</th>
+                <th>สต๊อก</th>
+                <th>จัดการ</th>
+            </tr>
+        </thead>
+        <tbody id="table-listmenu">
+        </tbody>
+    </table>
 </div>
 
 <script>
@@ -157,48 +145,68 @@
     }
 
     function showMenu(data) {
-        let listmenu = $('#table-listmenu');
-        listmenu.empty();
-        if (data.length === 0) {
-            listmenu.append(`
-                                        <tr class="border-top">
-                                            <td colspan="6" class="text-center text-muted">ไม่มีข้อมูล</td>
-                                        </tr>
-                                    `);
-        } else {
-            data.forEach(function(menu) {
-                let statusText = menu.status === 1 ? 'เปิดขาย' : 'ปิดขาย';
-                listmenu.append(`
-                                <tr class="border-top">
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="rounded-3 overflow-hidden" style="width:5rem; height:5rem;">
-                                                <img src="${menu.path}" style="width:100%; height:100%; object-fit:cover;" alt="" onerror="this.onerror=null;this.src='/assets/images/picture.png';">
+        const tbody = $('#table-listmenu');
+        tbody.empty();
+
+        if ($.fn.DataTable.isDataTable('#table-menu')) {
+            $('#table-menu').DataTable().destroy();
+        }
+
+        data.forEach((menu, index) => {
+            let statusText = menu.status === 1 ? 'เปิดขาย' : 'ปิดขาย';
+            tbody.append(`
+                                 <tr class="border-top  align-middle">
+                                     <td>
+                                         <div class="d-flex align-items-center">
+                                             <div class="rounded-3 overflow-hidden" style="width:5rem; height:5rem;">
+                                                 <img src="${menu.path}" style="width:100%; height:100%; object-fit:cover;" alt="" onerror="this.onerror=null;this.src='/assets/images/picture.png';">
                                             </div>
                                             <div class="text-content ms-3">
-                                                <div class="fw-bold">${menu.name}</div>
-                                                <div class="text-truncate" style="max-width: 120px;color:var(--bs-secondary-color)">
-                                                    ${menu.details}
-                                                </div>
-                                            </div>
-                                    </td>
-                                    <td>${menu.category_name}</td>
-                                    <td>฿${menu.price}</td>
+                                                 <div class="fw-bold">${menu.name}</div>
+                                                 <div class="text-truncate" style="max-width: 120px;color:var(--bs-secondary-color)">
+                                                     ${menu.details}
+                                                 </div>
+                                             </div>
+                                     </td>
+                                     <td >${menu.category_name}</td>
+                                     <td >฿${menu.price}</td>
 
-                                    <td> ${statusText}</td>
-                                    <td>
-                                      ${menu.stock}
-                                    </td>
-                                    <td>
-                                        <div class="text-end gap-2">
-                                            <button class="btn btn-warning text-white" id="btn-edit-menu" data-menu='${JSON.stringify(menu)}'>แก้ไข</button>
-                                            <button class="btn btn-danger" onClick="deleteMenu(${menu.id},'${menu.name}')">ลบ</button>
+                                     <td > ${statusText}</td>
+                                     <td >
+                                       ${menu.stock}
+                                     </td>
+                                     <td >
+                                        <div class="d-flex flex-wrap justify-content-end gap-2">
+                                            <button class="btn btn-warning text-white" id="btn-edit-menu" data-menu='${JSON.stringify(menu)}'>
+                                            <i class="fa-solid fa-pencil"></i>
+                                            </button>
+                                            <button class="btn btn-danger" onClick="deleteMenu(${menu.id},'${menu.name}')">
+                                            <i class="fa-solid fa-trash"></i>
+                                            </button>
                                         </div>
-                                    </td>
-                                </tr> 
-                        `);
-            })
-        }
+                                     </td>
+                                 </tr> 
+        `);
+        });
+
+        $('#table-menu').DataTable({
+            responsive: true,
+            scrollX: false,
+            autoWidth: false,
+            pageLength: 10,
+            lengthMenu: [10, 25, 50, 100],
+            language: {
+                lengthMenu: "แสดง _MENU_ รายการ",
+                search: "ค้นหา:",
+                info: "แสดง _START_ ถึง _END_ จากทั้งหมด _TOTAL_ รายการ",
+                paginate: {
+                    next: "ถัดไป",
+                    previous: "ก่อนหน้า"
+                },
+                zeroRecords: "ไม่พบข้อมูล",
+                infoEmpty: "ไม่มีข้อมูล",
+            }
+        });
     }
 
 
@@ -239,8 +247,8 @@
                             <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
                                 <label for="">${category.name}</label>
                                 <div class="btn-group">
-                                    <button class="btn btn-warning text-white btn-sm"  onClick="editCategory(${category.id},'${category.name}')">แก้ไข</button>
-                                    <button class="btn btn-danger btn-sm" onClick="deleteCategory(${category.id})">ลบ</button>
+                                    <button class="btn btn-warning text-white btn-sm"  onClick="editCategory(${category.id},'${category.name}')"><i class="fa-solid fa-pencil"></i></button>
+                                    <button class="btn btn-danger btn-sm" onClick="deleteCategory(${category.id})"><i class="fa-solid fa-trash"></i></button>
                                 </div>
                             </div>
                             `);
@@ -386,6 +394,12 @@
     $('#imageUpload').on('change', function(event) {
         const [file] = event.target.files;
         if (file) {
+            if (!file.type.startsWith('image/')) {
+                Swal.fire('รูปภาพไม่ถูกต้อง', 'กรุณาเลือกรูปภาพที่ถูกต้อง (เช่น .jpg, .png)', 'error');
+                $(this).val(''); // reset input
+                $('#previewImage').attr('src', '/assets/images/picture.png');
+                return;
+            }
             $('#previewImage').attr('src', URL.createObjectURL(file)).show();
         } else {
             $('#previewImage').attr('src', "/assets/images/picture.png").show();
@@ -420,9 +434,9 @@
                                 <tr class="border-top" data-id="${menu.id}">
                                     <td>${menu.name}</td>
                                     <td class="d-flex justify-content-end">
-                                        <button class="btn btn-danger" onclick="adjustStock(this, -1)">-</button>
-                                        <input  type="number" class="form-control w-25 mx-2 stock-input" value="${menu.stock}" min="0"></input>
-                                        <button class="btn btn-primary" onclick="adjustStock(this, 1)">+</button>
+                                        <button class="btn btn-danger" onclick="adjustStock(this, -1)"><i class="fa-solid fa-minus"></i></button>
+                                        <input  type="number" class="form-control w-50 mx-2 stock-input" value="${menu.stock}" min="0"></input>
+                                        <button class="btn btn-warning text-white" onclick="adjustStock(this, 1)"><i class="fa-solid fa-plus"></i></button>
                                     </td>
                                 </tr>
                         `);

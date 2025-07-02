@@ -13,17 +13,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     switch ($case) {
         case 'addCategory':
             $categoryName = $_POST['categoryName'] ?? '';
+
             if ($categoryName) {
-                $stmt = $db->prepare("INSERT INTO category (name, create_at) VALUES (:name, NOW())");
+                $stmt = $db->prepare("SELECT id, is_active FROM category WHERE name = :name LIMIT 1");
                 $stmt->bindParam(':name', $categoryName);
-                if ($stmt->execute()) {
-                    echo json_encode(['status' => 'success', 'message' => 'เพิ่มประเภทเมนูสำเร็จ']);
+                $stmt->execute();
+                $existing = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                if ($existing) {
+                    if ($existing['is_active'] == 0) {
+                        $updateStmt = $db->prepare("UPDATE category SET is_active = 1 WHERE id = :id");
+                        $updateStmt->bindParam(':id', $existing['id']);
+                        if ($updateStmt->execute()) {
+                            echo json_encode(['status' => 'success', 'message' => 'เปิดใช้งานประเภทเมนูอีกครั้ง']);
+                        } else {
+                            echo json_encode(['status' => 'error', 'message' => 'ไม่สามารถเปิดใช้งานประเภทเมนูได้']);
+                        }
+                    } else {
+                        echo json_encode(['status' => 'error', 'message' => 'ประเภทเมนูนี้มีอยู่แล้ว']);
+                    }
                 } else {
-                    echo json_encode(['status' => 'error', 'message' => 'Failed to add category']);
+                    $stmt = $db->prepare("INSERT INTO category (name, create_at, is_active) VALUES (:name, NOW(), 1)");
+                    $stmt->bindParam(':name', $categoryName);
+                    if ($stmt->execute()) {
+                        echo json_encode(['status' => 'success', 'message' => 'เพิ่มประเภทเมนูสำเร็จ']);
+                    } else {
+                        echo json_encode(['status' => 'error', 'message' => 'ไม่สามารถเพิ่มประเภทเมนูได้']);
+                    }
                 }
             } else {
-                echo json_encode(['status' => 'error', 'message' => 'Category name is required']);
+                echo json_encode(['status' => 'error', 'message' => 'กรุณาระบุชื่อประเภทเมนู']);
             }
+
             $db = null;
             break;
         case 'editCategory':
@@ -219,7 +240,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             break;
     }
 } else if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-   $case = $_GET['case'] ?? '';
+    $case = $_GET['case'] ?? '';
 
     switch ($case) {
 

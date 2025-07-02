@@ -7,30 +7,32 @@ if (!$isLoggedIn) {
     require_once __DIR__ . '/../app/pages/login.php';
     exit;
 }
+
+$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$uri = trim($uri, '/');
+
+// ถ้า path ว่าง ให้เป็น home
+$route = $uri === '' ? 'dashboard' : $uri;
 ?>
 
-<div class="container-fluid p-0 d-flex ">
+<div class="d-flex flex-column flex-lg-row">
 
     <?php
     require_once __DIR__ . '/../app/templates/sidebar.php'; ?>
 
-    <div class="bg-light flex-fill " style="min-height: 100vh;">
-        <div class="p-2 d-md-none d-flex text-white bg-dark fs-3 fw-bold">
+    <div class="flex-fill" style="min-height: 100vh;">
+        <div class="p-2 d-lg-none d-flex text-white bg-dark fs-3 fw-bold">
             <a href="#" class="text-white ms-2"
                 data-bs-toggle="offcanvas"
                 data-bs-target="#bdSidebar">
                 <i class="fa-solid fa-bars "></i>
             </a>
-            <span class="ms-3">FenixRestaurant</span>
+            <a href="/dashboard" class="ms-3 text-white" style="text-decoration: none;"><img src="/assets/images/letter-f.png" alt="" style="width:2rem;height:2rem"> enixRestaurant</a>
         </div>
         <div class="container mt-3">
             <?php
             // ดึง path จาก URL
-            $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-            $uri = trim($uri, '/');
 
-            // ถ้า path ว่าง ให้เป็น home
-            $route = $uri === '' ? 'dashboard' : $uri;
 
             $routes = [
                 'dashboard' => __DIR__ . '/../app/pages/dashboard.php',
@@ -53,16 +55,6 @@ if (!$isLoggedIn) {
 
     </div>
 </div>
-
-
-
-
-<script>
-
-</script>
-
-
-
 
 <?php
 require_once __DIR__ . '/../app/templates/footer.php';

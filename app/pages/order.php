@@ -1,10 +1,12 @@
 <nav>
     <div class="nav nav-tabs" id="nav-tab" role="tablist">
-        <button class="nav-link active w-50" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">โต๊ะ</button>
-        <button class="nav-link w-50" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">สั่งอาหาร</button>
+        <button class="nav-link active w-50 fw-bold" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">เลือกโต๊ะ</button>
+        <button class="nav-link w-50 fw-bold" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">สั่งอาหาร</button>
 
     </div>
 </nav>
+
+
 <div class="tab-content" id="nav-tabContent">
     <div class="tab-pane fade show active " id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab" tabindex="0">
 
@@ -12,7 +14,9 @@
             <div class="spinner-border" role="status"></div>
         </div>
         <div class="contrainer mt-3">
-            <div class="row" id="alltable"></div>
+            <div class="row" id="alltable">
+
+            </div>
         </div>
 
     </div>
@@ -30,7 +34,7 @@
                 </div>
             </div>
             <div class="col-12 col-sm-6 col-m-6 col-lg-6 col-xl-6">
-                <div class="asdasdasd" id="order_type"></div>
+                <div class="text-center fw-bold fs-4 text-warning mt-3" id="order_type"></div>
                 <div id="orderList"></div>
                 <div id="previousOrder"></div>
             </div>
@@ -55,14 +59,14 @@
                 <div id="modal_stock"></div>
                 <div class="mb-3" id="modal_details"></div>
                 <div class="d-flex justify-content-center gap-3">
-                    <button id="btn-minus" class="btn btn-primary">-</button>
+                    <button id="btn-minus" class="btn btn-warning text-white"><i class="fa-solid fa-minus"></i></button>
                     <input type="number" class="form-control w-25 text-right" value="1" id="qty-input">
-                    <button id="btn-plus" class="btn btn-primary">+</button>
+                    <button id="btn-plus" class="btn btn-warning text-white"><i class="fa-solid fa-plus"></i></button>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
-                <button type="button" class="btn btn-primary" id="btn-add-to-order">ตกลง</button>
+                <button type="button" class="btn btn-warning text-white" id="btn-add-to-order">ตกลง</button>
             </div>
         </div>
     </div>
@@ -175,20 +179,69 @@
                                         </tr>
                                     `);
                     } else {
+                        listtable.append(`
+                        <div class="col-6 col-sm-6 col-md-4 col-lg-3 mb-3">
+                                <div class="card shadow-sm h-100 cursor-pointer table-card bg-dark" onclick="takeAway('999', 'กลับบ้าน', 0)">
+                                    <div class="card-body h-100">
+                                        <div class="d-none d-lg-flex align-items-center justify-content-center h-100">
+                                            <div class="me-3">
+                                                <span class="d-inline-flex bg-white align-items-center justify-content-center  text-white  rounded-circle" style="width: 40px; height: 40px;padding: 2.5rem">
+                                                    <i class="fa-solid fa-house table-icon text-dark"></i>
+                                                </span>
+
+                                            </div>
+                                            <div>
+                                                <h5 class="mb-0 fw-bold text-white">กลับบ้าน</h5>
+                                            </div>
+                                        </div>
+
+                                        <div class="d-lg-none">
+                                            <h5 class="fw-bold text-white">กลับบ้าน</h5>
+                                            <span class="d-inline-flex align-items-center justify-content-center  bg-white  text-white  rounded-circle" style="width: 40px; height: 40px;padding: 2.5rem">
+                                                <i class="fa-solid fa-house table-icon text-dark"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        `)
                         response.data.forEach(function(table) {
                             const stateText = table.table_state === 1 ? 'มีลูกค้า' : 'ว่าง';
-                            const stateColor = table.table_state === 1 ? 'bg-danger' : 'bg-success';
+                            const stateColor = table.table_state === 1 ? 'bg-warning' : 'bg-white';
+                            const iconColor = table.table_state === 1 ? 'text-dark' : 'text-dark';
+                            const textColor = table.table_state === 1 ? 'text-warning' : 'text-white';
 
 
                             listtable.append(`
                                     <div class="col-6 col-sm-6 col-md-4 col-lg-3 mb-3">
-                                    <div class="card shadow-sm h-100 cursor-pointer table-card" onclick="selectTable(${table.id}, '${table.name}', ${table.table_state})">
-                                        <div class="card-body text-center">
-                                            <h5 class="fw-bold mb-2">${table.name}</h5>
-                                            <span class="badge ${stateColor}">${stateText}</span>
+                                        <div class="card shadow-sm h-100 cursor-pointer table-card bg-dark" onclick="selectTable(${table.id}, '${table.name}', ${table.table_state})">
+
+                                            <span class="badge ${stateColor} status-badge  text-dark"> ${stateText}</span>
+
+                                            <div class="card-body h-100">
+                                                <div class="d-none d-lg-flex align-items-center justify-content-center h-100">
+                                                    <div class="me-3">
+                                                        <span class="d-inline-flex align-items-center justify-content-center ${stateColor} text-white  rounded-circle" style="width: 40px; height: 40px;padding: 2.5rem">
+                                                            <i class="fa-solid fa-chair table-icon ${iconColor} "></i>
+                                                        </span>
+                                                        
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="mb-0 fw-bold ${textColor}">${table.name}</h5>
+                                                    </div>
+                                                </div>
+
+                                                <div class="d-lg-none">
+                                                    <h5 class="fw-bold ${textColor}">${table.name}</h5>
+                                                     <span class="d-inline-flex align-items-center justify-content-center ${stateColor} text-white  rounded-circle" style="width: 40px; height: 40px;padding: 2.5rem">
+                                                            <i class="fa-solid fa-chair table-icon ${iconColor} "></i>
+                                                        </span>
+                                                </div>
+                                            </div>
+
                                         </div>
                                     </div>
-                                </div>
                                 `);
                         });
                     }
@@ -306,21 +359,86 @@
                         method: 'POST',
                         data: {
                             case: 'openBill',
-                            table_id: id
+                            table_id: id,
+                            employeeid: <?php echo $_SESSION['user']['id'] ?>
                         },
                         dataType: 'json',
                         success: function(response) {
-                            $('#order_type').data('table-id', id);
-                            $('#order_type').text(name);
-                            const tabTrigger = new bootstrap.Tab(document.querySelector('#nav-profile-tab'));
-                            tabTrigger.show();
-                            getPreviousorder(id);
+                            if (response.status === 'success') {
+                                $('#order_type').data('table-id', id);
+                                $('#order_type').text(name);
+                                const tabTrigger = new bootstrap.Tab(document.querySelector('#nav-profile-tab'));
+                                tabTrigger.show();
+                                getPreviousorder(id);
+                            } else {
+                                Swal.fire('error', 'เกิดข้อผิดพลาด', 'error')
+                            }
+
                         }
                     })
 
                 }
             })
         }
+    }
+
+    function takeAway(id, name, state) {
+        $.ajax({
+            url: '/api/api_order.php',
+            method: 'GET',
+            data: {
+                case: 'getBilltakeAway'
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.status === 'success') {
+                    if (response.data.length != 0) {
+                        $('#order_type').data('table-id', id);
+                        $('#order_type').text(name);
+                        const tabTrigger = new bootstrap.Tab(document.querySelector('#nav-profile-tab'));
+                        tabTrigger.show();
+                        getPreviousorder(id);
+                    } else {
+                        Swal.fire({
+                            title: `คุณต้องการเปิดบิล ${name} ?`,
+                            showDenyButton: true,
+                            confirmButtonText: "ใช่",
+                            denyButtonText: `ยกเลิก`
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                $.ajax({
+                                    url: '/api/api_order.php',
+                                    method: 'POST',
+                                    data: {
+                                        case: 'openBill',
+                                        table_id: id,
+                                        employeeid: <?php echo $_SESSION['user']['id'] ?>
+                                    },
+                                    dataType: 'json',
+                                    success: function(response) {
+                                        if (response.status === 'success') {
+                                            $('#order_type').data('table-id', id);
+                                            $('#order_type').text(name);
+                                            const tabTrigger = new bootstrap.Tab(document.querySelector('#nav-profile-tab'));
+                                            tabTrigger.show();
+                                            getPreviousorder(id);
+                                        } else {
+                                            Swal.fire('error', 'เกิดข้อผิดพลาด', 'error')
+                                        }
+
+                                    }
+                                })
+
+                            }
+                        })
+                    }
+
+                } else {
+                    Swal.fire('error', 'เกิดข้อผิดพลาด', 'error')
+                }
+
+            }
+        })
     }
 
     $('#btn-add-to-order').on('click', function() {
@@ -386,7 +504,7 @@
     function renderOrderList() {
 
         const container = $('#orderList');
-        
+
         if (orderList.length === 0) {
             container.empty();
         } else {
@@ -394,21 +512,27 @@
             orderList.forEach((item, index) => {
                 container.append(`
             <div class="d-flex justify-content-between border-bottom py-2">
-                <div>${item.name} x ${item.qty}</div>
-                <div>฿${item.price}</div>
-                <div  class="btn btn-warning btn-editorder" data-index="${index}">แก้ไข</div>
-                <div  class="btn btn-danger btn-deleteorder"  data-index="${index}">ลบ</div>
+                <div>${item.name} x ${item.qty} ฿${item.price}</div>
+                <div>
+                <div  class="btn btn-warning text-white btn-editorder" data-index="${index}"><i class="fa-solid fa-pencil"></i></div>
+                <div  class="btn btn-danger btn-deleteorder"  data-index="${index}"><i class="fa-regular fa-trash-can"></i></div>
+                </div>
+                
             </div>
         `);
             });
 
             container.append(`
-            <div class="" id="orderTotal"></div>
-            <div class="btn btn-primary" id="confirm-order" >สั่งอาหาร</div>
+            <input type="hidden" name="total_amount" id="total_amount">
+            <div class="d-flex justify-content-between align-items-center mt-2">
+            <div class="fw-bold"id="orderTotal"></div>
+            <div class="btn btn-warning text-white" id="confirm-order" >สั่งอาหาร</div>
+            </div>
             `);
 
             const total = orderList.reduce((sum, item) => sum + item.price * item.qty, 0);
             $('#orderTotal').text(`รวมทั้งหมด: ฿${total}`);
+            $('#total_amount').val(total);
         }
 
     }
@@ -465,33 +589,50 @@
 
         const tableId = $('#order_type').data('table-id');
         if (!tableId) {
-            alert('กรุณาเลือกโต๊ะ');
+            Swal.fire('error', 'กรุณาเลือกโต๊ะ', 'error')
             return;
         }
 
-        $.ajax({
-            url: '/api/api_order.php',
-            method: 'POST',
-            data: {
-                case: 'orderMenu',
-                orders: JSON.stringify(orderList),
-                table_id: tableId
-            },
-            dataType: 'json',
-            success: function(response) {
-                console.log('response:', response);
-                if (response.status === 'success') {
-                    alert('สั่งอาหารสำเร็จ');
-                    orderList = [];
-                    renderOrderList();
-                    getCategory();
-                    getMenu();
-                    getPreviousorder(tableId);
-                } else {
-                    alert('ผิดพลาด: ' + response.message);
-                }
+        console.log($('#total_amount').val());
+
+
+        Swal.fire({
+            title: `คุณต้องการสั่งอาหาร ?`,
+            showDenyButton: true,
+            confirmButtonText: "ใช่",
+            denyButtonText: `ยกเลิก`
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/api/api_order.php',
+                    method: 'POST',
+                    data: {
+                        case: 'orderMenu',
+                        orders: JSON.stringify(orderList),
+                        table_id: tableId,
+                        total_amount: $('#total_amount').val()
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        console.log('response:', response);
+                        if (response.status === 'success') {
+                            Swal.fire('success', 'สั่งอาหารสำเร็จ', 'success')
+                            orderList = [];
+                            renderOrderList();
+                            getCategory();
+                            getMenu();
+                            getPreviousorder(tableId);
+                        } else {
+                            Swal.fire('error', 'เกิดข้อผิดพลาด', 'error')
+                        }
+                    }
+                });
             }
-        });
+        })
+
+
+
+
     });
 
     $('#nav-home-tab').on('click', function() {
@@ -515,14 +656,38 @@
             success: function(response) {
                 let previous = $('#previousOrder');
                 previous.empty();
+
                 if (response.data.length === 0) {
-                    previous.html('<div class="text-muted text-center">ไม่มีรายการก่อนหน้า</div>');
-                    // previous.append(`<div class="btn btn-danger btn-cancelTable"  data-table_id="${table_id}">ยกเลิกบิล</div>`)
+                    previous.html(`
+                    <hr>
+                    <div class="text-muted text-center fw-bold fs-4">ไม่มีรายการก่อนหน้า</div>`);
                     return;
                 }
 
+                previous.html(`
+                <hr>
+                <div class="text-center fw-bold fs-4 text-warning">รายการก่อนหน้า</div>`);
+
+                // 👇 รวมชื่อสินค้าที่ซ้ำกัน
+                const groupedItems = {};
                 response.data.forEach(item => {
+                    if (!groupedItems[item.name]) {
+                        groupedItems[item.name] = {
+                            name: item.name,
+                            quantity: item.quantity,
+                            price: item.price
+                        };
+                    } else {
+                        groupedItems[item.name].quantity += item.quantity;
+                    }
+                });
+
+                let totalAll = 0;
+
+                // 👇 แสดงผลแต่ละรายการที่รวมแล้ว
+                Object.values(groupedItems).forEach(item => {
                     const total = item.price * item.quantity;
+                    totalAll += total;
                     previous.append(`
                     <div class="d-flex justify-content-between border-bottom py-2">
                         <div>${item.name} x ${item.quantity}</div>
@@ -531,16 +696,15 @@
                 `);
                 });
 
-                // รวมทั้งหมด
-                const totalAll = response.data.reduce((sum, item) => sum + (item.price * item.quantity), 0);
                 previous.append(`
                 <div class="text-end fw-bold pt-2 border-top mt-2">รวมทั้งหมด: ฿${totalAll}</div>
             `);
             }
-        })
+        });
     }
 
-    $(document).on('click','.btn-cancelTable',function(){
+
+    $(document).on('click', '.btn-cancelTable', function() {
         const table_id = $(this).data('table_id');
         $.ajax({
             url: '/api/api_order.php',
@@ -550,10 +714,10 @@
                 table_id: table_id
             },
             dataType: 'json',
-            success: function(response){
-                Swal.fire('success',response.message,'success')
+            success: function(response) {
+                Swal.fire('success', response.message, 'success')
             }
         })
-        
+
     })
 </script>

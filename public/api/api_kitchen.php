@@ -13,31 +13,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     switch ($case) {
         case 'update_status_order_to_1':
-            $order_id = (int)$_POST['order_id'];
-            $stmt = $db->prepare("UPDATE order_item SET status = 1 WHERE id = :order_id");
-            $stmt->bindParam(':order_id', $order_id);
+            $bill_id = (int)$_POST['bill_id'];
+            $menuId = (int)$_POST['menu_id'];
+            $quantity = (int)$_POST['quantity'];
+
+            $stmt = $db->prepare("UPDATE order_item oi
+                          JOIN bills b ON oi.bill_id = b.id
+                          SET oi.status = 1
+                          WHERE b.id = :bill_id AND oi.menu_id = :menu_id AND oi.status = 0");
+
+            $stmt->bindParam(':bill_id', $bill_id, PDO::PARAM_INT);
+            $stmt->bindParam(':menu_id', $menuId, PDO::PARAM_INT);
 
             if ($stmt->execute()) {
-                echo json_encode(['status' => 'success', 'message' => 'สำเร็จ']);
+                echo json_encode(['status' => 'success', 'message' => 'อัปเดตสถานะเรียบร้อย']);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'อัปเดตสถานะไม่สำเร็จ']);
             }
-
-
             $db = null;
             break;
 
         case 'update_status_order_to_2':
-            $order_id = (int)$_POST['order_id'];
-            $stmt = $db->prepare("UPDATE order_item SET status = 2 WHERE id = :order_id");
-            $stmt->bindParam(':order_id', $order_id);
+            $bill_id = (int)$_POST['bill_id'];
+            $menuId = (int)$_POST['menu_id'];
+            $quantity = (int)$_POST['quantity'];
+
+            $stmt = $db->prepare("UPDATE order_item oi
+                          JOIN bills b ON oi.bill_id = b.id
+                          SET oi.status = 2
+                          WHERE b.id = :bill_id AND oi.menu_id = :menu_id AND oi.status = 1");
+
+            $stmt->bindParam(':bill_id', $bill_id, PDO::PARAM_INT);
+            $stmt->bindParam(':menu_id', $menuId, PDO::PARAM_INT);
 
             if ($stmt->execute()) {
-                echo json_encode(['status' => 'success', 'message' => 'สำเร็จ']);
+                echo json_encode(['status' => 'success', 'message' => 'อัปเดตสถานะเรียบร้อย']);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'อัปเดตสถานะไม่สำเร็จ']);
             }
-
 
             $db = null;
             break;
-
 
         default:
             echo json_encode(['status' => 'error', 'message' => 'Invalid case']);

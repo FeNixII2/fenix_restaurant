@@ -1,16 +1,16 @@
 <div class="row mb-3">
   <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-    <div class="fw-bold fs-3">พนักงาน</div>
+    <div class="fw-bold fs-3 text-warning">พนักงาน</div>
     <div class="gap-2">
-      <button class="btn btn-primary text-white" type="button" data-bs-toggle="offcanvas" data-bs-target="#canvasaddemployee" aria-controls="offcanvasRight">+ พนักงาน</button>
+      <button class="btn btn-warning text-white" type="button" data-bs-toggle="offcanvas" data-bs-target="#canvasaddemployee" aria-controls="offcanvasRight"><i class="fa-solid fa-users"></i> พนักงาน</button>
     </div>
   </div>
 </div>
-<!-- ตาราง -->
+
 <div class="table-responsive">
-  <table class="table table-bordered table-striped text-center align-middle">
-    <thead class="table-dark text-nowrap">
-      <tr>
+  <table id="table-em" class="display table mb-0 ">
+    <thead>
+      <tr class="text-nowrap">
         <th>ลำดับ</th>
         <th>ชื่อผู้ใช้</th>
         <th>อีเมล</th>
@@ -21,14 +21,15 @@
       </tr>
     </thead>
     <tbody id="employeeTableBody">
-
     </tbody>
   </table>
 </div>
 
+
+
 <div class="offcanvas offcanvas-end" tabindex="-1" id="canvasaddemployee" aria-labelledby="canvasaddemployee">
   <div class="offcanvas-header">
-    <h5 class="offcanvas-title">ข้อมูลพนักงาน</h5>
+    <h5 class="offcanvas-title fw-bold text-warning">ข้อมูลพนักงาน</h5>
     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
   </div>
   <div class="offcanvas-body">
@@ -62,13 +63,13 @@
         <label class="form-label">ตำแหน่ง</label>
         <select name="role" class="form-select" required>
           <option value="1" text>Admin</option>
-          <option value="2">Staff</option>
+          <option value="2">Order & Cashier</option>
           <option value="3">Chef</option>
         </select>
       </div>
 
       <div class="modal-footer">
-        <button class="btn btn-primary" type="submit">บันทึก</button>
+        <button class="btn btn-warning text-white" type="submit">บันทึก</button>
       </div>
     </form>
 
@@ -78,7 +79,7 @@
 
 <div class="offcanvas offcanvas-end" tabindex="-1" id="canvaseditemployee" aria-labelledby="canvaseditemployee">
   <div class="offcanvas-header">
-    <h5 class="offcanvas-title">แก้ไขข้อมูลพนักงาน</h5>
+    <h5 class="offcanvas-title fw-bold text-warning">แก้ไขข้อมูลพนักงาน</h5>
     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
   </div>
   <div class="offcanvas-body">
@@ -90,7 +91,7 @@
       </div>
       <div class="mb-3">
         <label class="form-label">อีเมล</label>
-        <input type="email" name="editemail" id="editemail" class="form-control">
+        <input type="email" name="editemail" id="editemail" class="form-control" required>
       </div>
       <div class="mb-3">
         <label class="form-label">ชื่อ</label>
@@ -112,7 +113,7 @@
         <label class="form-label">ตำแหน่ง</label>
         <select id="editrole" name="editrole" class="form-select" required <?= ($role !== 4) ? 'disabled' : '' ?>>
           <option value="1">Admin</option>
-          <option value="2">Staff</option>
+          <option value="2">Order & Cashier</option>
           <option value="3">Chef</option>
         </select>
       </div>
@@ -143,45 +144,66 @@
       dataType: 'json',
       success: function(response) {
         if (response.status === 'success') {
-          employeeArray = response.data;
-          let table = $('#employeeTableBody');
-          table.empty();
-          if (response.data.length == 0) {
-            table.append(
-              `<tr class="border-top">
-                  <td colspan="6" class="text-center text-muted">ไม่มีข้อมูล</td>
-              </tr>`
-            )
+
+
+          if ($.fn.DataTable.isDataTable('#table-em')) {
+            $('#table-em').DataTable().clear().destroy(); // ใช้ clear() ก่อน destroy
           }
-          let count = 1;
-          response.data.forEach(em => {
+          const tbody = $('#employeeTableBody');
+          tbody.empty();
+
+          response.data.forEach((em, index) => {
             let btnedit = '';
-
-            // ไม่ให้แก้/ลบ user ชื่อ 'admin'
             if (em.username !== 'admin') {
-              btnedit = `<button class="btn btn-warning text-white btn-sm" id="btn-edit" data-employee='${JSON.stringify(em)}'>แก้ไข</button>`;
-
-              // ถ้า role คน login ไม่ตรงกับ em → แสดงปุ่มลบ
+              btnedit = `<button class="btn btn-warning text-white btn-sm" id="btn-edit" data-employee='${JSON.stringify(em)}'>
+                <i class="fa-solid fa-pencil"></i>
+              </button>`;
               if (currentUserid !== em.id) {
-                btnedit += ` <button class="btn btn-danger btn-sm" onClick="deleteEmployee(${em.id})">ลบ</button>`;
+                btnedit += `<button class="btn btn-danger btn-sm" onClick="deleteEmployee(${em.id})">
+                     <i class="fa-solid fa-trash"></i>
+                   </button>`;
               }
             }
-            table.append(
-              `
-              <tr>
-                <td>${count}</td>
-                <td>${em.username}</td>
-                <td>${em.email}</td>
-                <td>${em.firstname}</td>
-                <td>${em.lastname}</td>
-                <td>${em.rolename}</td>
-                <td>
-                    ${btnedit}
-                </td>
-              </tr>
-              `
-            )
-            count++;
+
+            console.log(btnedit);
+
+            tbody.append(`
+                                    <tr class="border-top align-middle">
+                                     <td >
+                                         ${index+1}
+                                     </td>
+                                     <td >${em.username}</td>
+                                     <td >${em.email}</td>
+
+                                     <td >${em.firstname}</td>
+                                     <td >${em.lastname}</td>
+                                     <td >${em.rolename}</td>
+                                      <td >
+                                      <div class="d-flex flex-wrap justify-content-end gap-2">
+                                      ${btnedit}
+                                    </div>
+                                     </td>
+                                 </tr> 
+                  
+            `);
+          });
+          $('#table-em').DataTable({
+            responsive: true,
+            scrollX: false,
+            autoWidth: false,
+            pageLength: 10,
+            lengthMenu: [10, 25, 50, 100],
+            language: {
+              lengthMenu: "แสดง _MENU_ รายการ",
+              search: "ค้นหา:",
+              info: "แสดง _START_ ถึง _END_ จากทั้งหมด _TOTAL_ รายการ",
+              paginate: {
+                next: "ถัดไป",
+                previous: "ก่อนหน้า"
+              },
+              zeroRecords: "ไม่พบข้อมูล",
+              infoEmpty: "ไม่มีข้อมูล",
+            }
           });
         }
       }
@@ -189,11 +211,8 @@
   }
   $('#formEmployee').on('submit', function(e) {
     e.preventDefault();
-    console.log(employeeArray);
 
     const found = employeeArray.find(item => item.username === $("#username").val().toLowerCase());
-    console.log(found);
-
     if (found) {
       Swal.fire('ผิดพลาด', 'username นี้มีผู้ใช้แล้ว', 'error');
       return;
@@ -215,10 +234,7 @@
         let username = $('#username').val().toLowerCase();
         formData.set('username', username);
         formData.append('case', 'create_employee');
-        for (let pars of formData.entries()) {
-          console.log(pars[0], pars[1]);
 
-        }
         $.ajax({
           url: '/api/api_manage_employee.php',
           method: 'POST',
@@ -298,6 +314,13 @@
 
   $('#formEditEmployee').on('click', '#btn-ConfirmEdit', function(e) {
     e.preventDefault();
+
+    const form = document.getElementById('formEditEmployee');
+
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
     const password = $('#editpassword').val();
     const confirmPassword = $('#editconfirmpassword').val();
 

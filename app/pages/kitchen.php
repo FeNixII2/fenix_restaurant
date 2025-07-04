@@ -44,7 +44,6 @@
             dataType: 'json',
             success: function(response) {
                 const orders = response.data;
-                console.log(orders);
 
                 const statusGrouped = {
                     0: {}, // pending
@@ -299,8 +298,6 @@
 
         const quantityText = li.textContent.match(/x(\d+)/);
         const quantity = quantityText ? parseInt(quantityText[1]) : 1;
-
-        console.log(billId, menuId, quantity);
 
 
         $.ajax({

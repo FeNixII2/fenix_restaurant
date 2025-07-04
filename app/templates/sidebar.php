@@ -147,12 +147,6 @@ $id = $_SESSION['user']['id'] ?? null;
 
 <script>
     $(document).ready(function() {
-        // const user = <?php echo json_encode($_SESSION['user']); ?>;
-        // console.log(user); // ดูทั้งหมด
-        // console.log("ID:", user.id);
-        // console.log("Username:", user.username);
-        // console.log("Role:", user.role);
-
     })
     document.getElementById('btn-close-sidebar').addEventListener('click', function() {
         const offcanvasElement = document.getElementById('bdSidebar');
@@ -189,7 +183,6 @@ $id = $_SESSION['user']['id'] ?? null;
         }).then((result) => {
             if (result.isConfirmed) {
                 $.post('/api/api_logout.php', function(response) {
-                    console.log('Logout response:', response);
                     if (response.status === 'success') {
                         window.location.href = '/login.php';
                     } else {

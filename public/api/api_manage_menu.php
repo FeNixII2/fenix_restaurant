@@ -84,6 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $menuName = $_POST['menuName'] ?? '';
             $menuCategory = $_POST['menuCategory'] ?? '';
             $menuDetails = $_POST['menuDetails'] ?? '';
+            $menuServetype  = (int)$_POST['menuServetype'];
             $price = $_POST['price'] ?? '';
             $status = $_POST['status'] ?? '';
 
@@ -106,14 +107,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $imageStmt->execute();
                     $imageId = $db->lastInsertId();  // เอา id ไปใส่ menu
 
-                    $stmt = $db->prepare("INSERT INTO menu (name, category_id, details, price, image_id, status, create_at)
-                      VALUES (:name, :category_id, :details, :price, :image_id, :status, NOW())");
+                    $stmt = $db->prepare("INSERT INTO menu (name, category_id, details, price, image_id, status, create_at, serve_type)
+                      VALUES (:name, :category_id, :details, :price, :image_id, :status, NOW(), :serve_type)");
                     $stmt->bindParam(':image_id', $imageId); // ใส่ imageId แทน path
 
                 }
             } else {
-                $stmt = $db->prepare("INSERT INTO menu (name, category_id, details, price, status, create_at)
-                      VALUES (:name, :category_id, :details, :price, :status, NOW())");
+                $stmt = $db->prepare("INSERT INTO menu (name, category_id, details, price, status, create_at, serve_type)
+                      VALUES (:name, :category_id, :details, :price, :status, NOW(), :serve_type)");
             }
 
 
@@ -121,7 +122,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->bindParam(':category_id', $menuCategory);
             $stmt->bindParam(':details', $menuDetails);
             $stmt->bindParam(':price', $price);
-
+            $stmt->bindParam(':serve_type', $menuServetype);
             $stmt->bindParam(':status', $status);
             $stmt->execute();
             // Check if the insert was successful
@@ -139,6 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $menuId = $_POST['id'] ?? '';
             $menuName = $_POST['menuName'] ?? '';
             $menuCategory = intval($_POST['menuCategory']) ?? '';
+            $menuServetype  = (int)$_POST['menuServetype'];
             $menuDetails = $_POST['menuDetails'] ?? '';
             $price = floatval($_POST['price']) ?? '';
             $status = intval($_POST['status']) ?? '';
@@ -180,17 +182,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 // เตรียม statement พร้อมอัปเดตรูป
                 $stmt = $db->prepare("UPDATE menu 
-                SET name = :name, category_id = :category_id, price = :price, image_id = :image, details= :details, status = :status 
+                SET name = :name, category_id = :category_id, price = :price, image_id = :image, details= :details, status = :status, serve_type = :serve_type
                 WHERE id = :id");
                 $stmt->bindParam(':image', $imageId);
             } else {
                 $stmt = $db->prepare("UPDATE menu 
-                SET name = :name, category_id = :category_id, price = :price, details= :details, status = :status 
+                SET name = :name, category_id = :category_id, price = :price, details= :details, status = :status, serve_type = :serve_type
                 WHERE id = :id");
             }
             $stmt->bindParam(':details', $menuDetails);
             $stmt->bindParam(':name', $menuName);
             $stmt->bindParam(':category_id', $menuCategory);
+            $stmt->bindParam(':serve_type', $menuServetype);
             $stmt->bindParam(':price', $price);
             $stmt->bindParam(':status', $status);
             $stmt->bindParam(':id', $menuId);

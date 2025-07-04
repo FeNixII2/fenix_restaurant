@@ -65,7 +65,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     switch ($case) {
 
         case 'getOrder':
-            $stmt = $db->prepare("SELECT order_item.*,bills.bill_code,bills.create_at as bill_create,bills.table_id,menu.`name`,`table`.name as table_name FROM order_item LEFT JOIN menu on menu.id = order_item.menu_id LEFT JOIN bills on bills.id = order_item.bill_id LEFT JOIN `table` on `table`.id = bills.table_id WHERE order_item.status IN (0,1,2)");
+            $stmt = $db->prepare("SELECT order_item.*, bills.bill_code, bills.create_at AS bill_create, bills.table_id,
+       menu.`name`, menu.serve_type, `table`.name AS table_name
+FROM order_item
+LEFT JOIN menu ON menu.id = order_item.menu_id
+LEFT JOIN bills ON bills.id = order_item.bill_id
+LEFT JOIN `table` ON `table`.id = bills.table_id
+WHERE 
+    order_item.status IN (0, 1, 2)
+    AND menu.serve_type = 1
+    AND (
+        order_item.status != 2
+        OR bills.create_at >= NOW() - INTERVAL 1 DAY
+    )");
             $stmt->execute();
             $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
             echo json_encode(['status' => 'success', 'data' => $data]);

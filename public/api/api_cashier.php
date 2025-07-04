@@ -111,7 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $qty = (int)$_POST['qty'];
                 $total = (int)$_POST['total'];
 
-                $stmt = $db->prepare("UPDATE order_item SET status = 4 WHERE menu_id = :menu_id AND bill_id = :bill_id AND status = 0 ");
+                $stmt = $db->prepare("UPDATE order_item SET status = 4 WHERE menu_id = :menu_id AND bill_id = :bill_id AND order_item.served = 0 ");
                 $stmt->bindParam(':menu_id', $menu_id);
                 $stmt->bindParam(':bill_id', $billId);
                 $stmt->execute();
@@ -184,7 +184,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     LEFT JOIN `table` ON `table`.id = bills.table_id
                                     LEFT JOIN employee AS e1 ON e1.id = bills.create_by    -- พนักงานเปิดโต๊ะ
                                     LEFT JOIN employee AS e2 ON e2.id = bills.checkbill_by     -- พนักงานคิดเงิน
-                                    LEFT JOIN payment ON payment.id = bills.payment");
+                                    LEFT JOIN payment ON payment.id = bills.payment
+                                    ORDER BY bills.status = 1 DESC, bills.close_at desc");
             $stmt->execute();
             $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 

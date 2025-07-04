@@ -11,7 +11,6 @@ if (!$isLoggedIn) {
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $uri = trim($uri, '/');
 
-// ถ้า path ว่าง ให้เป็น home
 $route = $uri === '' ? 'dashboard' : $uri;
 ?>
 
@@ -31,7 +30,6 @@ $route = $uri === '' ? 'dashboard' : $uri;
         </div>
         <div class="container mt-3">
             <?php
-            // ดึง path จาก URL
 
 
             $routes = [

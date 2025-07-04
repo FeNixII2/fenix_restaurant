@@ -49,6 +49,13 @@
             </select>
         </div>
         <div class="mb-3">
+            <label for="menuServetype" class="form-label">เสิร์ฟ</label>
+            <select class="form-select" name="menuServetype" id="menuServetype" required>
+                <option value="1" selected>ต้องเตรียมก่อนเสิร์ฟ</option>
+                <option value="0">พร้อมเสิร์ฟทันที</option>
+            </select>
+        </div>
+        <div class="mb-3">
             <label for="details" class="form-label">รายละเอียด</label>
             <textarea class="form-control" id="menuDetails" name="menuDetails" rows="3"></textarea>
         </div>
@@ -145,12 +152,14 @@
     }
 
     function showMenu(data) {
-        const tbody = $('#table-listmenu');
-        tbody.empty();
+
 
         if ($.fn.DataTable.isDataTable('#table-menu')) {
             $('#table-menu').DataTable().destroy();
         }
+
+        const tbody = $('#table-listmenu');
+        tbody.empty();
 
         data.forEach((menu, index) => {
             let statusText = menu.status === 1 ? 'เปิดขาย' : 'ปิดขาย';
@@ -264,7 +273,6 @@
             },
             error: function(xhr) {
                 Swal.fire('ผิดพลาด', xhr.responseText, 'error');
-                console.log(xhr.responseText);
             }
         });
     }
@@ -322,7 +330,6 @@
                     },
                     error: function(xhr) {
                         Swal.fire('ผิดพลาด', xhr.responseText, 'error');
-                        console.log(xhr.responseText);
                     }
                 });
             }
@@ -357,7 +364,6 @@
                     },
                     error: function(xhr) {
                         Swal.fire('ผิดพลาด', xhr.responseText, 'error');
-                        console.log(xhr.responseText);
                     }
                 });
             }
@@ -374,10 +380,12 @@
 
     $(document).on('click', '#btn-edit-menu', function() {
         const menu = JSON.parse($(this).attr('data-menu'));
+        
         let imageSrc = menu.path && menu.path.trim() !== "" ? menu.path : "/assets/images/picture.png";
         $('#canvasaddfood').offcanvas('show');
         $('#menuName').val(menu.name);
         $('select[name="menuCategory"]').val(menu.category_id);
+        $('select[name="menuServetype"]').val(menu.serve_type);
         $('#menuDetails').val(menu.details);
         $('#price').val(menu.price);
         $('#previewImage').attr('src', imageSrc);
@@ -524,7 +532,6 @@
                     },
                     error: function(xhr) {
                         Swal.fire('ผิดพลาด', xhr.responseText, 'error');
-                        console.log(xhr.responseText);
                     }
                 });
             }
@@ -571,7 +578,6 @@
                         },
                         error: function(xhr) {
                             Swal.fire('ผิดพลาด', xhr.responseText, 'error');
-                            console.log(xhr.responseText);
                         }
                     });
                 }
@@ -613,7 +619,6 @@
                         },
                         error: function(xhr) {
                             Swal.fire('ผิดพลาด', xhr.responseText, 'error');
-                            console.log(xhr.responseText);
                         }
                     });
                 }
@@ -662,7 +667,6 @@
                         },
                         error: function(xhr) {
                             Swal.fire('ผิดพลาด', xhr.responseText, 'error');
-                            console.log(xhr.responseText);
                         }
                     });
                 }
@@ -703,7 +707,6 @@
                         },
                         error: function(xhr) {
                             Swal.fire('ผิดพลาด', xhr.responseText, 'error');
-                            console.log(xhr.responseText);
                         }
                     });
                 }

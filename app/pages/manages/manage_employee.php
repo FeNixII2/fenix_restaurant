@@ -164,9 +164,6 @@
                    </button>`;
               }
             }
-
-            console.log(btnedit);
-
             tbody.append(`
                                     <tr class="border-top align-middle">
                                      <td >
@@ -244,8 +241,6 @@
           dataType: 'json',
           success: function(response) {
             if (response.status === 'success') {
-              console.log(response.data);
-
               Swal.fire('สำเร็จ', response.message, 'success');
               $('#formEmployee')[0].reset();
               bootstrap.Offcanvas.getInstance(document.getElementById("canvasaddemployee")).hide();
@@ -346,11 +341,6 @@
         let formData = new FormData(form);
         formData.append('case', 'edit_employee')
         formData.append('editusername', $('#editusername').val())
-        for (let par of formData.entries()) {
-          console.log(par[0], par[1]);
-
-
-        }
 
         $.ajax({
           url: '/api/api_manage_employee.php',

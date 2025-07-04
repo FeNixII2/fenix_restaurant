@@ -15,8 +15,10 @@
         </div>
         <div class="contrainer mt-3">
             <div class="row" id="alltable">
-
             </div>
+            <hr>
+            <div class="text-warning fw-bold fs-3 mb-3">รายการรอเสิร์ฟ</div>
+            <div class="row" id="pendingOrders"></div>
         </div>
 
     </div>
@@ -82,7 +84,138 @@
         getTable();
         getCategory();
         getMenu();
+        getServe();
     })
+
+    function getServe() {
+        $.ajax({
+            url: '/api/api_order.php',
+            method: 'GET',
+            data: {
+                case: 'getOrder_serve'
+            },
+            dataType: 'json',
+            success: function(response) {
+                const orders = response.data;
+
+                const groupedByTable = {};
+
+                orders.forEach(order => {
+                    const tableId = order.table_id;
+                    const serveType = parseInt(order.serve_type);
+                    const status = parseInt(order.status);
+
+                    if ((serveType === 1 && status === 2) || serveType === 0) {
+                        if (!groupedByTable[tableId]) {
+                            groupedByTable[tableId] = [];
+                        }
+                        groupedByTable[tableId].push(order);
+                    }
+                });
+
+                renderGroup(groupedByTable, 'pendingOrders');
+            }
+        });
+    }
+
+    function renderGroup(group, containerId) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = '';
+
+        Object.keys(group).forEach(tableId => {
+            const firstOrder = group[tableId][0];
+            const tableName = firstOrder.table_name || `กลับบ้าน`;
+            const billCode = firstOrder.bill_code || '';
+            const time = firstOrder.bill_create || '';
+            let buttonText = (firstOrder.table_id == 999) ? 'เรียบร้อยทั้งหมด' : 'เสิร์ฟทั้งโต๊ะ';
+
+            // <button class="btn btn-outline-warning mt-2 w-100" onclick="serveWholeTable(this)">${buttonText}</button>
+
+            const card = document.createElement('div');
+            card.className = 'col-12 col-sm-12 col-lg-3 col-xl-3';
+            card.innerHTML = `
+            <div class="card mb-3" data-table="${tableId}">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <div class="fw-bold">#${billCode}</div>
+                        </div>
+                        <div class="fw-bold fs-4">${tableName}</div>
+                    </div>
+                    <ul class="list-group"></ul>
+                </div>
+            </div>
+        `;
+
+            const ul = card.querySelector('ul');
+
+            const groupedOrders = {};
+            group[tableId].forEach(order => {
+                const key = order.menu_id;
+                if (!groupedOrders[key]) {
+                    groupedOrders[key] = {
+                        ...order
+                    };
+                } else {
+                    groupedOrders[key].quantity += order.quantity;
+                }
+            });
+
+            Object.values(groupedOrders).forEach(order => {
+                const li = document.createElement('li');
+                li.className = `list-group-item d-flex justify-content-between align-items-center`;
+                li.dataset.orderId = order.id;
+                li.dataset.menuId = order.menu_id;
+                li.dataset.quantity = order.quantity;
+                li.dataset.billId = order.bill_id;
+                li.dataset.tableId = order.table_id;
+
+
+                let buttonText = (order.table_id == 999) ? 'เรียบร้อย' : 'เสิร์ฟ';
+                let buttonHTML = `<button class="btn btn-sm  btn-warning text-white" onclick="serveOrder(this)">${buttonText}</button>`;
+
+                li.innerHTML = `
+                <div>
+                    ${order.name} x${order.quantity}
+                </div>
+                <div>${buttonHTML}</div>
+            `;
+
+                ul.appendChild(li);
+            });
+
+            container.appendChild(card);
+        });
+    }
+
+    // ฟังก์ชันกดเสิร์ฟรายการเดี่ยว
+    function serveOrder(btn) {
+        const li = btn.closest('li');
+        const menu_id = li.dataset.menuId;
+        const billId = li.dataset.billId;
+
+        $.ajax({
+            url: '/api/api_order.php',
+            method: 'POST',
+            data: {
+                case: 'serveOrder',
+                menu_id: menu_id,
+                bill_id: billId
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.status === 'success') {
+                    Swal.fire('สำเร็จ', 'เสิร์ฟรายการแล้ว', 'success');
+                } else {
+                    Swal.fire('ผิดพลาด', 'เสิร์ฟรายการไม่สำเร็จ', 'error');
+                }
+                getServe(); // reload ใหม่
+            }
+        });
+    }
+
+
+
 
     function getCategory() {
         $.ajax({
@@ -174,9 +307,31 @@
                     listtable.empty();
                     if (response.data.length === 0) {
                         listtable.append(`
-                                        <tr class="border-top">
-                                            <td colspan="6" class="text-center text-muted">ไม่มีข้อมูล</td>
-                                        </tr>
+                                    <div class="col-6 col-sm-6 col-md-4 col-lg-3 mb-3">
+                                            <div class="card shadow-sm h-100 cursor-pointer table-card bg-dark" onclick="takeAway('999', 'กลับบ้าน', 0)">
+                                                <div class="card-body h-100">
+                                                    <div class="d-none d-lg-flex align-items-center justify-content-center h-100">
+                                                        <div class="me-3">
+                                                            <span class="d-inline-flex bg-white align-items-center justify-content-center  text-white  rounded-circle" style="width: 40px; height: 40px;padding: 2.5rem">
+                                                                <i class="fa-solid fa-house table-icon text-dark"></i>
+                                                            </span>
+
+                                                        </div>
+                                                        <div>
+                                                            <h5 class="mb-0 fw-bold text-white">กลับบ้าน</h5>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="d-lg-none">
+                                                        <h5 class="fw-bold text-white">กลับบ้าน</h5>
+                                                        <span class="d-inline-flex align-items-center justify-content-center  bg-white  text-white  rounded-circle" style="width: 40px; height: 40px;padding: 2.5rem">
+                                                            <i class="fa-solid fa-house table-icon text-dark"></i>
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
                                     `);
                     } else {
                         listtable.append(`
@@ -306,7 +461,6 @@
         $('#modal_details').text(menuData.details)
         $('#modal_price').text('฿' + menuData.price)
         $('#modal_stock').text('คงเหลือ ' + menuData.stock)
-        // console.log('selectmenu: ', selectedMenu);
 
 
         const $qtyInput = $('#qty-input');
@@ -492,8 +646,6 @@
             });
         }
 
-        console.log(orderList); // ดูรายการสั่งอาหาร
-
         // ปิด modal
         const modal = bootstrap.Modal.getInstance(document.getElementById('orderModal'));
         modal.hide();
@@ -593,9 +745,6 @@
             return;
         }
 
-        console.log($('#total_amount').val());
-
-
         Swal.fire({
             title: `คุณต้องการสั่งอาหาร ?`,
             showDenyButton: true,
@@ -614,7 +763,6 @@
                     },
                     dataType: 'json',
                     success: function(response) {
-                        console.log('response:', response);
                         if (response.status === 'success') {
                             Swal.fire('success', 'สั่งอาหารสำเร็จ', 'success')
                             orderList = [];
@@ -622,6 +770,7 @@
                             getCategory();
                             getMenu();
                             getPreviousorder(tableId);
+                            getServe();
                         } else {
                             Swal.fire('error', 'เกิดข้อผิดพลาด', 'error')
                         }

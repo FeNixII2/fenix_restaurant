@@ -211,7 +211,6 @@
                         },
                         error: function(xhr) {
                             Swal.fire('ผิดพลาด', xhr.responseText, 'error');
-                            console.log(xhr.responseText);
                         }
                     })
                 }
@@ -251,7 +250,6 @@
                     },
                     error: function(xhr) {
                         Swal.fire('ผิดพลาด', xhr.responseText, 'error');
-                        console.log(xhr.responseText);
                     }
                 })
             }
@@ -297,7 +295,6 @@
                     },
                     error: function(xhr) {
                         Swal.fire('ผิดพลาด', xhr.responseText, 'error');
-                        console.log(xhr.responseText);
                     }
                 })
             }

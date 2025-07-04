@@ -321,12 +321,12 @@
                 const timeText = formatDateTimeThai(bill.create_at);
                 const tableId = bill.table_id;
 
-                const validOrders = bill.orders.filter(o => o.status !== 4);
+                const validOrders = bill.orders.filter(o => o.served !== 2); // ตัด order ที่ถูกลบออก (served == 2)
 
                 const totalAmount = validOrders.reduce((sum, o) => sum + parseFloat(o.price) * o.quantity, 0);
 
-
-                const allPending = bill.orders.every(order => order.status === 0 || order.status === 4);
+                // ✅ ตรวจสอบว่า ยกเลิกบิลได้หรือไม่
+                const canCancelBill = validOrders.every(order => order.status === 0 && order.served === 0);
 
                 const card = document.createElement('div');
                 card.className = 'col-md-6 col-lg-4';
@@ -339,7 +339,7 @@
 
                         <div class="d-grid gap-2">
                             <button class="btn btn-warning text-white" onclick="viewBillDetailById(${bill.id},${tableId})"><i class="fa-solid fa-magnifying-glass"></i> ดูรายละเอียด</button>
-                            ${allPending ? `<button class="btn btn-outline-danger " onclick="cancelBill(${bill.id},${tableId})">ยกเลิกบิล</button>` : ''}
+                            ${canCancelBill ? `<button class="btn btn-outline-danger" onclick="cancelBill(${bill.id},${tableId})">ยกเลิกบิล</button>` : ''}
                         </div>
                     </div>
                 </div>
@@ -366,13 +366,12 @@
 
         title.textContent = `บิล ${bill.bill_code} (${bill.name ? bill.name : 'กลับบ้าน'})`;
 
-        // ✅ แยก valid orders ออกเป็น 2 กลุ่ม
-        const validOrders = bill.orders.filter(order => order.status !== 4);
+        // ✅ กรองเฉพาะ order ที่ไม่ใช่ status 4 และ served != 2
+        const validOrders = bill.orders.filter(order => order.status !== 4 && order.served !== 2);
 
-        const pendingOrders = validOrders.filter(order => order.status === 0);
-        const doneOrders = validOrders.filter(order => order.status !== 0 && order.status !== 4);
+        const pendingOrders = validOrders.filter(order => order.served === 0);
+        const doneOrders = validOrders.filter(order => order.served === 1);
 
-        // ✅ ฟังก์ชันรวมเมนูที่ชื่อและราคาซ้ำกัน
         function groupOrders(orders) {
             const grouped = {};
             orders.forEach(order => {
@@ -391,58 +390,65 @@
         const groupedPending = groupOrders(pendingOrders);
         const groupedDone = groupOrders(doneOrders);
 
-        // ✅ คำนวณยอดรวม
         const totalAmount = [...groupedPending, ...groupedDone].reduce((sum, item) => sum + parseFloat(item.price) * item.quantity, 0);
         const vatRate = 7;
         const vat = totalAmount * vatRate / 107;
         const netTotal = totalAmount - vat;
 
-        // ✅ HTML สำหรับ pending (ลบได้)
         const pendingHtml = groupedPending.map(order => {
-
-
             const itemTotal = parseFloat(order.price) * order.quantity;
+            let statusBadge = '';
+            let showDeleteButton = true;
+
+            if (order.served === 1) {
+                statusBadge = '<span class="badge bg-secondary">เสิร์ฟแล้ว</span>';
+                showDeleteButton = false;
+            } else if (order.status !== 0 && order.status !== 4) {
+                statusBadge = '<span class="badge bg-secondary">ทำแล้ว</span>';
+                showDeleteButton = false;
+            }
+
             return `
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-                <div>
-                    ${order.name} x${order.quantity}
-                    <div class="text-muted small">${itemTotal.toFixed(2)} ฿</div>
-                </div>
-                <button class="btn btn-sm btn-outline-danger" onclick="deleteOrder(${order.menu_id}, ${bill.id}, ${order.quantity}, ${itemTotal})"><i class="fa-solid fa-trash"></i></button>
-            </li>
-        `;
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+                ${order.name} x${order.quantity}
+                <div class="text-muted small">${itemTotal.toFixed(2)} ฿</div>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                ${statusBadge}
+                ${showDeleteButton ? `<button class="btn btn-sm btn-outline-danger" onclick="deleteOrder(${order.menu_id}, ${bill.id}, ${order.quantity}, ${itemTotal})"><i class="fa-solid fa-trash"></i></button>` : ''}
+            </div>
+        </li>
+    `;
         }).join('');
 
-        // ✅ HTML สำหรับ done (ทำแล้ว)
         const doneHtml = groupedDone.map(order => {
             const itemTotal = parseFloat(order.price) * order.quantity;
             return `
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-                <div>
-                    ${order.name} x${order.quantity}
-                    <div class="text-muted small">${itemTotal.toFixed(2)} ฿</div>
-                </div>
-                <span class="badge bg-secondary">ทำแล้ว</span>
-            </li>
-        `;
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+                ${order.name} x${order.quantity}
+                <div class="text-muted small">${itemTotal.toFixed(2)} ฿</div>
+            </div>
+            <span class="badge bg-secondary">เสิร์ฟแล้ว</span>
+        </li>
+    `;
         }).join('');
 
         content.innerHTML = `
-        ${pendingHtml ? `<h6 class="mt-2 fw-bold">รายการรอดำเนินการ</h6><ul class="list-group mb-3">${pendingHtml}</ul>` : ''}
-        ${doneHtml ? `<h6 class="mt-2 fw-bold">รายการที่ทำแล้ว</h6><ul class="list-group mb-3">${doneHtml}</ul>` : ''}
-        <div class="text-end">ยอดสุทธิ: ${netTotal.toFixed(2)} ฿</div>
-        <div class="text-end">VAT 7%: ${vat.toFixed(2)} ฿</div>
-        <h5 class="text-end">รวมทั้งสิ้น: <strong>${totalAmount.toFixed(2)} ฿</strong></h5>
-    `;
+    ${pendingHtml ? `<h6 class="mt-2 fw-bold">รายการรอดำเนินการ</h6><ul class="list-group mb-3">${pendingHtml}</ul>` : ''}
+    ${doneHtml ? `<h6 class="mt-2 fw-bold">รายการที่เสิร์ฟแล้ว</h6><ul class="list-group mb-3">${doneHtml}</ul>` : ''}
+    <div class="text-end">ยอดสุทธิ: ${netTotal.toFixed(2)} ฿</div>
+    <div class="text-end">VAT 7%: ${vat.toFixed(2)} ฿</div>
+    <h5 class="text-end">รวมทั้งสิ้น: <strong>${totalAmount.toFixed(2)} ฿</strong></h5>
+`;
 
-        // ปิดปุ่มถ้ายอดรวมเป็น 0
         if (totalAmount === 0) {
             $('#checkoutBtn').addClass('disabled').prop('disabled', true);
         } else {
             $('#checkoutBtn').removeClass('disabled').prop('disabled', false);
         }
 
-        // เปิด Modal เลือกวิธีชำระเงิน
         checkoutBtn.onclick = function() {
             const paymentModal = new bootstrap.Modal(document.getElementById('paymentModal'));
             paymentModal.show();
@@ -464,10 +470,11 @@
             };
         };
 
-        // เปิด Offcanvas
         const offcanvas = new bootstrap.Offcanvas(document.getElementById('billDetailCanvas'));
         offcanvas.show();
     }
+
+
 
 
 
@@ -563,12 +570,14 @@
             },
             success: function(response) {
                 if (response.status === 'success') {
-                    Swal.fire('สำเร็จ', 'ลบออเดอร์เรียบร้อย', 'success')
+                    Swal.fire('สำเร็จ', response.message, 'success')
                     getBill();
                     getHistoryBill();
                     const offcanvasEl = document.getElementById('billDetailCanvas');
                     const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasEl);
                     if (offcanvas) offcanvas.hide();
+                } else {
+                    Swal.fire('ผิดพลาด', response.message, 'error')
                 }
             },
             error: function() {

@@ -148,8 +148,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $db->rollBack();
                 echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
             }
+            $db = null;
+            break;
+
+        case 'serveOrder':
+            $billId = (int)$_POST['bill_id'];
+            $menu_id = (int)$_POST['menu_id'];
+            
+            try {
+                $stmt = $db->prepare("UPDATE order_item SET served = 1 WHERE bill_id = :bill_id AND menu_id = :menu_id AND served = 0");
+                $stmt->bindParam(':bill_id', $billId);
+                $stmt->bindParam(':menu_id', $menu_id);
+                if ($stmt->execute()) {
+                    echo json_encode(['status' => 'success', 'message' => 'สำเร็จ']);
+                }else{
+                    echo json_encode(['status' => 'error', 'message' => 'ไม่สำเร็จ']);
+                }
+            } catch (Exception $e) {
+                $db->rollBack();
+                echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+            }
 
             break;
+
+
 
 
         default:
@@ -162,7 +184,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     switch ($case) {
 
         case 'getMenu':
-            $stmt = $db->prepare("SELECT menu.*, category.name as category_name, images.path FROM menu LEFT JOIN category ON menu.category_id = category.id LEFT JOIN images on menu.image_id = images.id WHERE menu.is_active = '1' AND menu.status = 1 ORDER BY menu.name,menu.stock DESC ");
+            $stmt = $db->prepare("SELECT menu.*, category.name as category_name, images.path FROM menu LEFT JOIN category ON menu.category_id = category.id LEFT JOIN images on menu.image_id = images.id WHERE menu.is_active = '1' AND menu.status = 1 ORDER BY (menu.stock = 0) ASC, menu.name ASC");
             $stmt->execute();
             $menu = $stmt->fetchAll(PDO::FETCH_ASSOC);
             echo json_encode(['status' => 'success', 'data' => $menu]);
@@ -195,6 +217,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         case 'getBilltakeAway':
             $stmt = $db->prepare("SELECT * FROM `bills` WHERE table_id = 999 AND status = 1");
+            $stmt->execute();
+            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            echo json_encode(['status' => 'success', 'data' => $data]);
+            $db = null;
+            break;
+
+        case 'getOrder_serve':
+            $stmt = $db->prepare("SELECT 
+                                    order_item.*, 
+                                    bills.bill_code, 
+                                    bills.create_at as bill_create, 
+                                    bills.table_id, 
+                                    menu.`name`, 
+                                    menu.serve_type, 
+                                    `table`.name as table_name 
+                                    FROM 
+                                    order_item 
+                                    LEFT JOIN menu ON menu.id = order_item.menu_id 
+                                    LEFT JOIN bills ON bills.id = order_item.bill_id 
+                                    LEFT JOIN `table` ON `table`.id = bills.table_id 
+                                    WHERE 
+                                    served = 0 AND
+                                    order_item.status != 4 AND
+                                    (
+                                        (menu.serve_type = 1 AND order_item.status = 2)
+                                        OR
+                                        (menu.serve_type = 0)
+                                    )");
             $stmt->execute();
             $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
             echo json_encode(['status' => 'success', 'data' => $data]);

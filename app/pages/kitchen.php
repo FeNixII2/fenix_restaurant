@@ -83,8 +83,8 @@
         container.innerHTML = '';
 
         Object.keys(group).forEach(tableId => {
-            
-            
+
+
             const firstOrder = group[tableId][0];
             const tableName = firstOrder.table_name || `กลับบ้าน`;
             const billCode = firstOrder.bill_code || '';
@@ -154,28 +154,28 @@
     }
 
     function timeAgoThai(datetimeStr) {
-        if (!datetimeStr) return '';
-        const createdDate = new Date(datetimeStr);
-        createdDate.setHours(createdDate.getHours() + 7); // +7 ชั่วโมง (UTC+7)
+        if (!datetimeStr || isNaN(Date.parse(datetimeStr))) return '';
+
+        const createdDate = new Date(datetimeStr); // ไม่ต้องบวกเพิ่ม
         const now = new Date();
+
         const diffMs = now - createdDate;
         const diffSec = Math.floor(diffMs / 1000);
 
-        if (diffSec < 60) {
-            return `ผ่านมา ${diffSec} วินาที`;
-        } else if (diffSec < 3600) {
-            const minutes = Math.floor(diffSec / 60);
-            const seconds = diffSec % 60;
-            return `ผ่านมา ${minutes} นาที ${seconds} วินาที`;
-        } else if (diffSec < 86400) {
-            const hours = Math.floor(diffSec / 3600);
-            const minutes = Math.floor((diffSec % 3600) / 60);
-            const seconds = diffSec % 60;
-            return `ผ่านมา ${hours} ชั่วโมง ${minutes} นาที ${seconds} วินาที`;
-        } else {
-            const days = Math.floor(diffSec / 86400);
-            return `ผ่านมา ${days} วัน`;
+        if (diffSec < 60) return `ผ่านมา ${diffSec} วินาที`;
+        if (diffSec < 3600) {
+            const m = Math.floor(diffSec / 60);
+            const s = diffSec % 60;
+            return `ผ่านมา ${m} นาที ${s} วินาที`;
         }
+        if (diffSec < 86400) {
+            const h = Math.floor(diffSec / 3600);
+            const m = Math.floor((diffSec % 3600) / 60);
+            return `ผ่านมา ${h} ชั่วโมง ${m} นาที`;
+        }
+
+        const d = Math.floor(diffSec / 86400);
+        return `ผ่านมา ${d} วัน`;
     }
 
     // ส่งจำนวน qty ไปหลังบ้านด้วย

@@ -83,10 +83,12 @@
         container.innerHTML = '';
 
         Object.keys(group).forEach(tableId => {
+            
+            
             const firstOrder = group[tableId][0];
             const tableName = firstOrder.table_name || `กลับบ้าน`;
             const billCode = firstOrder.bill_code || '';
-            const time = firstOrder.bill_create || '';
+            const time = firstOrder.create_at || '';
             const passed = timeAgoThai(time);
 
             const card = document.createElement('div');

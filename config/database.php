@@ -1,6 +1,12 @@
 <?php
 require_once __DIR__ . '/env.php'; // โหลด .env
 
+
+
+
+
+
+
 class Database
 {
     private $host;
